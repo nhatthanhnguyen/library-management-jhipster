@@ -1,7 +1,12 @@
 package com.library.app.web.rest;
 
+import com.library.app.domain.Authority;
 import com.library.app.domain.Checkout;
+import com.library.app.domain.User;
+import com.library.app.repository.AuthorityRepository;
 import com.library.app.repository.CheckoutRepository;
+import com.library.app.repository.UserRepository;
+import com.library.app.security.SecurityUtils;
 import com.library.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +44,14 @@ public class CheckoutResource {
 
     private final CheckoutRepository checkoutRepository;
 
-    public CheckoutResource(CheckoutRepository checkoutRepository) {
+    private final UserRepository userRepository;
+
+    private final AuthorityRepository authorityRepository;
+
+    public CheckoutResource(CheckoutRepository checkoutRepository, UserRepository userRepository, AuthorityRepository authorityRepository) {
         this.checkoutRepository = checkoutRepository;
+        this.userRepository = userRepository;
+        this.authorityRepository = authorityRepository;
     }
 
     /**
@@ -156,9 +166,19 @@ public class CheckoutResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of checkouts in body.
      */
     @GetMapping("/checkouts")
-    public ResponseEntity<List<Checkout>> getAllCheckouts(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<Checkout>> getAllCheckouts(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false, value = "isReturned") Boolean isReturned
+    ) {
         log.debug("REST request to get a page of Checkouts");
-        Page<Checkout> page = checkoutRepository.findAll(pageable);
+        Page<Checkout> page;
+        User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
+        Authority authority = authorityRepository.findById("ROLE_ADMIN").get();
+        if (user.getAuthorities().contains(authority)) {
+            page = checkoutRepository.findCheckouts(isReturned, pageable);
+        } else {
+            page = checkoutRepository.findCheckoutsByCurrentUser(user.getLogin(), isReturned, pageable);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

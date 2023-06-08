@@ -1,7 +1,12 @@
 package com.library.app.web.rest;
 
+import com.library.app.domain.Authority;
 import com.library.app.domain.Hold;
+import com.library.app.domain.User;
+import com.library.app.repository.AuthorityRepository;
 import com.library.app.repository.HoldRepository;
+import com.library.app.repository.UserRepository;
+import com.library.app.security.SecurityUtils;
 import com.library.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,8 +45,14 @@ public class HoldResource {
 
     private final HoldRepository holdRepository;
 
-    public HoldResource(HoldRepository holdRepository) {
+    private final UserRepository userRepository;
+
+    private final AuthorityRepository authorityRepository;
+
+    public HoldResource(HoldRepository holdRepository, UserRepository userRepository, AuthorityRepository authorityRepository) {
         this.holdRepository = holdRepository;
+        this.userRepository = userRepository;
+        this.authorityRepository = authorityRepository;
     }
 
     /**
@@ -151,7 +162,14 @@ public class HoldResource {
     @GetMapping("/holds")
     public ResponseEntity<List<Hold>> getAllHolds(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Holds");
-        Page<Hold> page = holdRepository.findAll(pageable);
+        Page<Hold> page;
+        User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
+        Authority authority = authorityRepository.findById("ROLE_ADMIN").get();
+        if (user.getAuthorities().contains(authority)) {
+            page = holdRepository.findAll(pageable);
+        } else {
+            page = holdRepository.findHoldsByCurrentUser(user.getLogin(), pageable);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
