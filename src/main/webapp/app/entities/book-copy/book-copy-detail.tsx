@@ -33,9 +33,9 @@ export const BookCopyDetail = () => {
           </dt>
           <dd>{bookCopyEntity.yearPublished}</dd>
           <dt>Publisher</dt>
-          <dd>{bookCopyEntity.publisher ? bookCopyEntity.publisher.id : ''}</dd>
+          <dd>{bookCopyEntity.publisher ? bookCopyEntity.publisher.name : ''}</dd>
           <dt>Book</dt>
-          <dd>{bookCopyEntity.book ? bookCopyEntity.book.id : ''}</dd>
+          <dd>{bookCopyEntity.book ? bookCopyEntity.book.title : ''}</dd>
         </dl>
         <Button tag={Link} to="/book-copy" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

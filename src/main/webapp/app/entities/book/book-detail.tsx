@@ -32,8 +32,19 @@ export const BookDetail = () => {
             <span id="title">Title</span>
           </dt>
           <dd>{bookEntity.title}</dd>
+          <dt>Author</dt>
+          <dd>
+            {bookEntity.authors
+              ? bookEntity.authors.map((val, i) => (
+                  <span key={val.id}>
+                    <a>{val.name}</a>
+                    {bookEntity.authors && i === bookEntity.authors.length - 1 ? '' : ', '}
+                  </span>
+                ))
+              : null}
+          </dd>
           <dt>Category</dt>
-          <dd>{bookEntity.category ? bookEntity.category.id : ''}</dd>
+          <dd>{bookEntity.category ? bookEntity.category.name : ''}</dd>
         </dl>
         <Button tag={Link} to="/book" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

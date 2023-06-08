@@ -30,17 +30,19 @@
       "relationshipType": "one-to-many"
     },
     {
+      "otherEntityField": "name",
+      "otherEntityName": "author",
+      "otherEntityRelationshipName": "book",
+      "ownerSide": true,
+      "relationshipName": "author",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityField": "name",
       "otherEntityName": "category",
       "otherEntityRelationshipName": "book",
       "relationshipName": "category",
       "relationshipType": "many-to-one"
-    },
-    {
-      "otherEntityName": "author",
-      "otherEntityRelationshipName": "book",
-      "ownerSide": false,
-      "relationshipName": "author",
-      "relationshipType": "many-to-many"
     }
   ],
   "service": "no"

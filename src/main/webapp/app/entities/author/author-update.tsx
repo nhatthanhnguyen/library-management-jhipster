@@ -51,7 +51,6 @@ export const AuthorUpdate = () => {
     const entity = {
       ...authorEntity,
       ...values,
-      books: mapIdList(values.books),
     };
 
     if (isNew) {
@@ -66,7 +65,6 @@ export const AuthorUpdate = () => {
       ? {}
       : {
           ...authorEntity,
-          books: authorEntity?.books?.map(e => e.id.toString()),
         };
 
   return (
@@ -95,16 +93,6 @@ export const AuthorUpdate = () => {
                   required: { value: true, message: 'This field is required.' },
                 }}
               />
-              <ValidatedField label="Book" id="author-book" data-cy="book" type="select" multiple name="books">
-                <option value="" key="0" />
-                {books
-                  ? books.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/author" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;

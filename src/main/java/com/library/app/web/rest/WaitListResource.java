@@ -143,12 +143,21 @@ public class WaitListResource {
      * {@code GET  /wait-lists} : get all the waitLists.
      *
      * @param pageable the pagination information.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of waitLists in body.
      */
     @GetMapping("/wait-lists")
-    public ResponseEntity<List<WaitList>> getAllWaitLists(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<WaitList>> getAllWaitLists(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+    ) {
         log.debug("REST request to get a page of WaitLists");
-        Page<WaitList> page = waitListRepository.findAll(pageable);
+        Page<WaitList> page;
+        if (eagerload) {
+            page = waitListRepository.findAllWithEagerRelationships(pageable);
+        } else {
+            page = waitListRepository.findAll(pageable);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -162,7 +171,7 @@ public class WaitListResource {
     @GetMapping("/wait-lists/{id}")
     public ResponseEntity<WaitList> getWaitList(@PathVariable Long id) {
         log.debug("REST request to get WaitList : {}", id);
-        Optional<WaitList> waitList = waitListRepository.findById(id);
+        Optional<WaitList> waitList = waitListRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(waitList);
     }
 

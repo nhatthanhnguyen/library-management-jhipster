@@ -121,7 +121,7 @@ export const WaitList = () => {
                     </Button>
                   </td>
                   <td>{waitList.user ? waitList.user.id : ''}</td>
-                  <td>{waitList.book ? <Link to={`/book/${waitList.book.id}`}>{waitList.book.id}</Link> : ''}</td>
+                  <td>{waitList.book ? <Link to={`/book/${waitList.book.id}`}>{waitList.book.title}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`/wait-list/${waitList.id}`} color="info" size="sm" data-cy="entityDetailsButton">

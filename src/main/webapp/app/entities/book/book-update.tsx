@@ -8,10 +8,10 @@ import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateT
 import { mapIdList } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
-import { ICategory } from 'app/shared/model/category.model';
-import { getEntities as getCategories } from 'app/entities/category/category.reducer';
 import { IAuthor } from 'app/shared/model/author.model';
 import { getEntities as getAuthors } from 'app/entities/author/author.reducer';
+import { ICategory } from 'app/shared/model/category.model';
+import { getEntities as getCategories } from 'app/entities/category/category.reducer';
 import { IBook } from 'app/shared/model/book.model';
 import { getEntity, updateEntity, createEntity, reset } from './book.reducer';
 
@@ -23,8 +23,8 @@ export const BookUpdate = () => {
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
 
-  const categories = useAppSelector(state => state.category.entities);
   const authors = useAppSelector(state => state.author.entities);
+  const categories = useAppSelector(state => state.category.entities);
   const bookEntity = useAppSelector(state => state.book.entity);
   const loading = useAppSelector(state => state.book.loading);
   const updating = useAppSelector(state => state.book.updating);
@@ -41,8 +41,8 @@ export const BookUpdate = () => {
       dispatch(getEntity(id));
     }
 
-    dispatch(getCategories({}));
     dispatch(getAuthors({}));
+    dispatch(getCategories({}));
   }, []);
 
   useEffect(() => {
@@ -55,6 +55,7 @@ export const BookUpdate = () => {
     const entity = {
       ...bookEntity,
       ...values,
+      authors: mapIdList(values.authors),
       category: categories.find(it => it.id.toString() === values.category.toString()),
     };
 
@@ -70,6 +71,7 @@ export const BookUpdate = () => {
       ? {}
       : {
           ...bookEntity,
+          authors: bookEntity?.authors?.map(e => e.id.toString()),
           category: bookEntity?.category?.id,
         };
 
@@ -99,12 +101,22 @@ export const BookUpdate = () => {
                   required: { value: true, message: 'This field is required.' },
                 }}
               />
+              <ValidatedField label="Author" id="book-author" data-cy="author" type="select" multiple name="authors">
+                <option value="" key="0" />
+                {authors
+                  ? authors.map(otherEntity => (
+                      <option value={otherEntity.id} key={otherEntity.id}>
+                        {otherEntity.name}
+                      </option>
+                    ))
+                  : null}
+              </ValidatedField>
               <ValidatedField id="book-category" name="category" data-cy="category" label="Category" type="select">
                 <option value="" key="0" />
                 {categories
                   ? categories.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
+                        {otherEntity.name}
                       </option>
                     ))
                   : null}

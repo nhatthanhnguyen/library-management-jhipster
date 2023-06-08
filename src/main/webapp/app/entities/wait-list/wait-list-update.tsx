@@ -106,7 +106,7 @@ export const WaitListUpdate = () => {
                 {books
                   ? books.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
+                        {otherEntity.title}
                       </option>
                     ))
                   : null}

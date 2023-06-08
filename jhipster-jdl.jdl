@@ -37,14 +37,14 @@ entity Notification {
 entity WaitList
 
 relationship ManyToMany {
-    Author{book} to Book{author}
+    Book{author(name)} to Author{book(title)}
 }
 
 relationship OneToMany {
-    Category to Book{category},
-    Publisher to BookCopy{publisher},
-    Book to BookCopy{book},
-    Book to WaitList{book},
+    Category to Book{category(name)},
+    Publisher to BookCopy{publisher(name)},
+    Book to BookCopy{book(title)},
+    Book to WaitList{book(title)},
     BookCopy to Checkout{bookCopy},
     BookCopy to Hold{bookCopy},
 }

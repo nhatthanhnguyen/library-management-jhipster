@@ -27,7 +27,7 @@ public class WaitList implements Serializable {
     private User user;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "bookCopies", "waitLists", "category", "authors" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "bookCopies", "waitLists", "authors", "category" }, allowSetters = true)
     private Book book;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

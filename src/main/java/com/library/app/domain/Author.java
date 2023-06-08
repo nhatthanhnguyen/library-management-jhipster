@@ -30,10 +30,9 @@ public class Author implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToMany
-    @JoinTable(name = "rel_author__book", joinColumns = @JoinColumn(name = "author_id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
+    @ManyToMany(mappedBy = "authors")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "bookCopies", "waitLists", "category", "authors" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "bookCopies", "waitLists", "authors", "category" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -69,6 +68,12 @@ public class Author implements Serializable {
     }
 
     public void setBooks(Set<Book> books) {
+        if (this.books != null) {
+            this.books.forEach(i -> i.removeAuthor(this));
+        }
+        if (books != null) {
+            books.forEach(i -> i.addAuthor(this));
+        }
         this.books = books;
     }
 

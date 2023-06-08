@@ -17,6 +17,7 @@
       "relationshipType": "many-to-one"
     },
     {
+      "otherEntityField": "title",
       "otherEntityName": "book",
       "otherEntityRelationshipName": "waitList",
       "relationshipName": "book",

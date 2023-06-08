@@ -121,7 +121,7 @@ export const Book = () => {
                     </Button>
                   </td>
                   <td>{book.title}</td>
-                  <td>{book.category ? <Link to={`/category/${book.category.id}`}>{book.category.id}</Link> : ''}</td>
+                  <td>{book.category ? <Link to={`/category/${book.category.id}`}>{book.category.name}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`/book/${book.id}`} color="info" size="sm" data-cy="entityDetailsButton">

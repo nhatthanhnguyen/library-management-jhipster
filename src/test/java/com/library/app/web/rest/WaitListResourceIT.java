@@ -2,20 +2,28 @@ package com.library.app.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.library.app.IntegrationTest;
 import com.library.app.domain.WaitList;
 import com.library.app.repository.WaitListRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link WaitListResource} REST controller.
  */
 @IntegrationTest
+@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
 class WaitListResourceIT {
@@ -37,6 +46,9 @@ class WaitListResourceIT {
 
     @Autowired
     private WaitListRepository waitListRepository;
+
+    @Mock
+    private WaitListRepository waitListRepositoryMock;
 
     @Autowired
     private EntityManager em;
@@ -118,6 +130,23 @@ class WaitListResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(waitList.getId().intValue())));
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllWaitListsWithEagerRelationshipsIsEnabled() throws Exception {
+        when(waitListRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        restWaitListMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
+
+        verify(waitListRepositoryMock, times(1)).findAllWithEagerRelationships(any());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllWaitListsWithEagerRelationshipsIsNotEnabled() throws Exception {
+        when(waitListRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        restWaitListMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
+        verify(waitListRepositoryMock, times(1)).findAll(any(Pageable.class));
     }
 
     @Test

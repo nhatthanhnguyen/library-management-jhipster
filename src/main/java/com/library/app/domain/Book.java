@@ -40,14 +40,15 @@ public class Book implements Serializable {
     @JsonIgnoreProperties(value = { "user", "book" }, allowSetters = true)
     private Set<WaitList> waitLists = new HashSet<>();
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
-    private Category category;
-
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany
+    @JoinTable(name = "rel_book__author", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "author_id"))
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Set<Author> authors = new HashSet<>();
+
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
+    private Category category;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -139,30 +140,11 @@ public class Book implements Serializable {
         return this;
     }
 
-    public Category getCategory() {
-        return this.category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public Book category(Category category) {
-        this.setCategory(category);
-        return this;
-    }
-
     public Set<Author> getAuthors() {
         return this.authors;
     }
 
     public void setAuthors(Set<Author> authors) {
-        if (this.authors != null) {
-            this.authors.forEach(i -> i.removeBook(this));
-        }
-        if (authors != null) {
-            authors.forEach(i -> i.addBook(this));
-        }
         this.authors = authors;
     }
 
@@ -180,6 +162,19 @@ public class Book implements Serializable {
     public Book removeAuthor(Author author) {
         this.authors.remove(author);
         author.getBooks().remove(this);
+        return this;
+    }
+
+    public Category getCategory() {
+        return this.category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Book category(Category category) {
+        this.setCategory(category);
         return this;
     }
 

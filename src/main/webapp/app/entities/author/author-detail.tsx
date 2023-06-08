@@ -32,17 +32,6 @@ export const AuthorDetail = () => {
             <span id="name">Name</span>
           </dt>
           <dd>{authorEntity.name}</dd>
-          <dt>Book</dt>
-          <dd>
-            {authorEntity.books
-              ? authorEntity.books.map((val, i) => (
-                  <span key={val.id}>
-                    <a>{val.id}</a>
-                    {authorEntity.books && i === authorEntity.books.length - 1 ? '' : ', '}
-                  </span>
-                ))
-              : null}
-          </dd>
         </dl>
         <Button tag={Link} to="/author" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

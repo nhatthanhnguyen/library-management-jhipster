@@ -147,12 +147,21 @@ public class BookResource {
      * {@code GET  /books} : get all the books.
      *
      * @param pageable the pagination information.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of books in body.
      */
     @GetMapping("/books")
-    public ResponseEntity<List<Book>> getAllBooks(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<Book>> getAllBooks(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+    ) {
         log.debug("REST request to get a page of Books");
-        Page<Book> page = bookRepository.findAll(pageable);
+        Page<Book> page;
+        if (eagerload) {
+            page = bookRepository.findAllWithEagerRelationships(pageable);
+        } else {
+            page = bookRepository.findAll(pageable);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -166,7 +175,7 @@ public class BookResource {
     @GetMapping("/books/{id}")
     public ResponseEntity<Book> getBook(@PathVariable Long id) {
         log.debug("REST request to get Book : {}", id);
-        Optional<Book> book = bookRepository.findById(id);
+        Optional<Book> book = bookRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(book);
     }
 

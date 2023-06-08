@@ -149,12 +149,21 @@ public class BookCopyResource {
      * {@code GET  /book-copies} : get all the bookCopies.
      *
      * @param pageable the pagination information.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of bookCopies in body.
      */
     @GetMapping("/book-copies")
-    public ResponseEntity<List<BookCopy>> getAllBookCopies(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<BookCopy>> getAllBookCopies(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+    ) {
         log.debug("REST request to get a page of BookCopies");
-        Page<BookCopy> page = bookCopyRepository.findAll(pageable);
+        Page<BookCopy> page;
+        if (eagerload) {
+            page = bookCopyRepository.findAllWithEagerRelationships(pageable);
+        } else {
+            page = bookCopyRepository.findAll(pageable);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -168,7 +177,7 @@ public class BookCopyResource {
     @GetMapping("/book-copies/{id}")
     public ResponseEntity<BookCopy> getBookCopy(@PathVariable Long id) {
         log.debug("REST request to get BookCopy : {}", id);
-        Optional<BookCopy> bookCopy = bookCopyRepository.findById(id);
+        Optional<BookCopy> bookCopy = bookCopyRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(bookCopy);
     }
 

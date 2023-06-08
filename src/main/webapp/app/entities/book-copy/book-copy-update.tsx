@@ -107,7 +107,7 @@ export const BookCopyUpdate = () => {
                 {publishers
                   ? publishers.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
+                        {otherEntity.name}
                       </option>
                     ))
                   : null}
@@ -117,7 +117,7 @@ export const BookCopyUpdate = () => {
                 {books
                   ? books.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
+                        {otherEntity.title}
                       </option>
                     ))
                   : null}

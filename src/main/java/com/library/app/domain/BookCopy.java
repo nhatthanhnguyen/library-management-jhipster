@@ -45,7 +45,7 @@ public class BookCopy implements Serializable {
     private Publisher publisher;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "bookCopies", "waitLists", "category", "authors" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "bookCopies", "waitLists", "authors", "category" }, allowSetters = true)
     private Book book;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

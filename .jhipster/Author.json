@@ -18,9 +18,10 @@
   "readOnly": false,
   "relationships": [
     {
+      "otherEntityField": "title",
       "otherEntityName": "book",
       "otherEntityRelationshipName": "author",
-      "ownerSide": true,
+      "ownerSide": false,
       "relationshipName": "book",
       "relationshipType": "many-to-many"
     }

@@ -124,8 +124,8 @@ export const BookCopy = () => {
                     </Button>
                   </td>
                   <td>{bookCopy.yearPublished}</td>
-                  <td>{bookCopy.publisher ? <Link to={`/publisher/${bookCopy.publisher.id}`}>{bookCopy.publisher.id}</Link> : ''}</td>
-                  <td>{bookCopy.book ? <Link to={`/book/${bookCopy.book.id}`}>{bookCopy.book.id}</Link> : ''}</td>
+                  <td>{bookCopy.publisher ? <Link to={`/publisher/${bookCopy.publisher.id}`}>{bookCopy.publisher.name}</Link> : ''}</td>
+                  <td>{bookCopy.book ? <Link to={`/book/${bookCopy.book.id}`}>{bookCopy.book.title}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`/book-copy/${bookCopy.id}`} color="info" size="sm" data-cy="entityDetailsButton">

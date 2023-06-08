@@ -31,7 +31,7 @@ export const WaitListDetail = () => {
           <dt>User</dt>
           <dd>{waitListEntity.user ? waitListEntity.user.id : ''}</dd>
           <dt>Book</dt>
-          <dd>{waitListEntity.book ? waitListEntity.book.id : ''}</dd>
+          <dd>{waitListEntity.book ? waitListEntity.book.title : ''}</dd>
         </dl>
         <Button tag={Link} to="/wait-list" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
