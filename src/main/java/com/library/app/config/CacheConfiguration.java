@@ -81,6 +81,23 @@ public class CacheConfiguration {
             createCache(cm, com.library.app.domain.User.class.getName(), jcacheConfiguration);
             createCache(cm, com.library.app.domain.Authority.class.getName(), jcacheConfiguration);
             createCache(cm, com.library.app.domain.User.class.getName() + ".authorities", jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Book.class.getName(), jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Book.class.getName() + ".bookCopies", jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Book.class.getName() + ".waitLists", jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Book.class.getName() + ".authors", jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Author.class.getName(), jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Author.class.getName() + ".books", jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Category.class.getName(), jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Category.class.getName() + ".books", jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Publisher.class.getName(), jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Publisher.class.getName() + ".bookCopies", jcacheConfiguration);
+            createCache(cm, com.library.app.domain.BookCopy.class.getName(), jcacheConfiguration);
+            createCache(cm, com.library.app.domain.BookCopy.class.getName() + ".checkouts", jcacheConfiguration);
+            createCache(cm, com.library.app.domain.BookCopy.class.getName() + ".holds", jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Checkout.class.getName(), jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Hold.class.getName(), jcacheConfiguration);
+            createCache(cm, com.library.app.domain.Notification.class.getName(), jcacheConfiguration);
+            createCache(cm, com.library.app.domain.WaitList.class.getName(), jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };
     }

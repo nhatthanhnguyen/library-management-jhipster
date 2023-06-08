@@ -1,0 +1,40 @@
+{
+  "applications": "*",
+  "changelogDate": "20230608085212",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "checkout",
+  "fields": [
+    {
+      "fieldName": "startTime",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "endTime",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "isReturned",
+      "fieldType": "Boolean"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Checkout",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "bookCopy",
+      "otherEntityRelationshipName": "checkout",
+      "relationshipName": "bookCopy",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "no"
+}

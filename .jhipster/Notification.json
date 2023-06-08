@@ -1,0 +1,32 @@
+{
+  "applications": "*",
+  "changelogDate": "20230608085214",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "notification",
+  "fields": [
+    {
+      "fieldName": "sentAt",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "20"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Notification",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "no"
+}

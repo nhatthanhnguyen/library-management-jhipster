@@ -1,0 +1,27 @@
+{
+  "applications": "*",
+  "changelogDate": "20230608085215",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "wait_list",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "WaitList",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "book",
+      "otherEntityRelationshipName": "waitList",
+      "relationshipName": "book",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "no"
+}

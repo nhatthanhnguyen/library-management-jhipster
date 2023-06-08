@@ -1,0 +1,47 @@
+{
+  "applications": "*",
+  "changelogDate": "20230608085207",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "book",
+  "fields": [
+    {
+      "fieldName": "title",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Book",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "bookCopy",
+      "otherEntityRelationshipName": "book",
+      "relationshipName": "bookCopy",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "waitList",
+      "otherEntityRelationshipName": "book",
+      "relationshipName": "waitList",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "category",
+      "otherEntityRelationshipName": "book",
+      "relationshipName": "category",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "author",
+      "otherEntityRelationshipName": "book",
+      "ownerSide": false,
+      "relationshipName": "author",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "no"
+}

@@ -1,0 +1,59 @@
+entity Book {
+    title String required,
+}
+
+entity Author {
+    name String required,
+}
+
+entity Category {
+    name String required,
+}
+
+entity Publisher {
+    name String required,
+}
+
+entity BookCopy {
+    yearPublished Integer required
+}
+
+entity Checkout {
+    startTime LocalDate,
+    endTime LocalDate,
+    isReturned Boolean,
+}
+
+entity Hold {
+    startTime LocalDate,
+    endTime LocalDate,
+}
+
+entity Notification {
+    sentAt LocalDate,
+    type String maxlength(20),
+}
+
+entity WaitList
+
+relationship ManyToMany {
+    Author{book} to Book{author}
+}
+
+relationship OneToMany {
+    Category to Book{category},
+    Publisher to BookCopy{publisher},
+    Book to BookCopy{book},
+    Book to WaitList{book},
+    BookCopy to Checkout{bookCopy},
+    BookCopy to Hold{bookCopy},
+}
+
+relationship ManyToOne {
+    Checkout{user} to User,
+    Hold{user} to User,
+    Notification{user} to User,
+    WaitList{user} to User,
+}
+
+paginate Book, Author, Category, Publisher, BookCopy, Checkout, Hold, Notification, WaitList with pagination

@@ -1,0 +1,36 @@
+{
+  "applications": "*",
+  "changelogDate": "20230608085213",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "hold",
+  "fields": [
+    {
+      "fieldName": "startTime",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "endTime",
+      "fieldType": "LocalDate"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Hold",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "bookCopy",
+      "otherEntityRelationshipName": "hold",
+      "relationshipName": "bookCopy",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "no"
+}
