@@ -1,15 +1,13 @@
 package com.library.app.web.rest;
 
-import com.library.app.domain.Authority;
-import com.library.app.domain.Checkout;
-import com.library.app.domain.User;
-import com.library.app.repository.AuthorityRepository;
-import com.library.app.repository.CheckoutRepository;
-import com.library.app.repository.UserRepository;
+import com.library.app.domain.*;
+import com.library.app.repository.*;
 import com.library.app.security.SecurityUtils;
+import com.library.app.service.MailService;
 import com.library.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -48,10 +46,26 @@ public class CheckoutResource {
 
     private final AuthorityRepository authorityRepository;
 
-    public CheckoutResource(CheckoutRepository checkoutRepository, UserRepository userRepository, AuthorityRepository authorityRepository) {
+    private final WaitListRepository waitListRepository;
+
+    private final NotificationRepository notificationRepository;
+
+    private final MailService mailService;
+
+    public CheckoutResource(
+        CheckoutRepository checkoutRepository,
+        UserRepository userRepository,
+        AuthorityRepository authorityRepository,
+        WaitListRepository waitListRepository,
+        NotificationRepository notificationRepository,
+        MailService mailService
+    ) {
         this.checkoutRepository = checkoutRepository;
         this.userRepository = userRepository;
         this.authorityRepository = authorityRepository;
+        this.waitListRepository = waitListRepository;
+        this.notificationRepository = notificationRepository;
+        this.mailService = mailService;
     }
 
     /**
@@ -102,6 +116,32 @@ public class CheckoutResource {
         }
 
         Checkout result = checkoutRepository.save(checkout);
+        return ResponseEntity
+            .ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, checkout.getId().toString()))
+            .body(result);
+    }
+
+    @PutMapping("/checkouts/{id}/return")
+    public ResponseEntity<Checkout> returnBook(@PathVariable("id") Long id) {
+        Checkout checkout = checkoutRepository
+            .findById(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        if (checkout.getIsReturned()) {
+            throw new BadRequestAlertException("The book is returned", ENTITY_NAME, "bookisreturned");
+        }
+        checkout.setEndTime(LocalDate.now());
+        checkout.setIsReturned(true);
+        Checkout result = checkoutRepository.save(checkout);
+        List<WaitList> waitList = waitListRepository.findByBookId(id);
+        for (WaitList wait : waitList) {
+            Notification notification = new Notification();
+            notification.setUser(wait.getUser());
+            notification.setSentAt(LocalDate.now());
+            notificationRepository.save(notification);
+            mailService.sendBookAvailable(wait.getUser(), wait.getBook());
+        }
+        waitListRepository.deleteByBookId(id);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, checkout.getId().toString()))

@@ -32,6 +32,16 @@ public interface BookCopyRepository extends JpaRepository<BookCopy, Long> {
     )
     Page<BookCopy> findAllWithToOneRelationships(Pageable pageable);
 
+    @Query(
+        "select bc from BookCopy bc " +
+        "where bc.id not in " +
+        "(select h.bookCopy.id from Hold h where h.endTime is null and h.bookCopy.book.id = :id) " +
+        "or bc.id not in " +
+        "(select c.bookCopy.id from Checkout c where (c.endTime is null or c.isReturned = false) " +
+        "and c.bookCopy.book.id = :id)"
+    )
+    List<BookCopy> findBookCopiesAvailable(@Param("id") Long id);
+
     @Query("select distinct bookCopy from BookCopy bookCopy left join fetch bookCopy.publisher left join fetch bookCopy.book")
     List<BookCopy> findAllWithToOneRelationships();
 

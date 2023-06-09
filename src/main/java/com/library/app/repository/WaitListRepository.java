@@ -38,6 +38,13 @@ public interface WaitListRepository extends JpaRepository<WaitList, Long> {
     @Query("select distinct waitList from WaitList waitList left join fetch waitList.book")
     List<WaitList> findAllWithToOneRelationships();
 
+    @Modifying
+    @Query("delete from WaitList w where w.book.id = :bookId")
+    void deleteByBookId(@Param("bookId") Long bookId);
+
+    @Query("select w from WaitList w where w.book.id = :bookId")
+    List<WaitList> findByBookId(@Param("bookId") Long bookId);
+
     @Query("select waitList from WaitList waitList left join fetch waitList.book where waitList.id =:id")
     Optional<WaitList> findOneWithToOneRelationships(@Param("id") Long id);
 }

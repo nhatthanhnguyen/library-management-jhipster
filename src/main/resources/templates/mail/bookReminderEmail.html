@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
+  <head>
+    <title th:text="#{email.reminder.title}">Book Reminder</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+  </head>
+  <body>
+    <p th:text="#{email.reminder.greeting(${user.login})}">Dear</p>
+    <p th:text="#{email.reminder.text1(${book.title})}"></p>
+    <p>
+      <span th:text="#{email.reminder.text2}">Regards, </span>
+      <br />
+      <em th:text="#{email.signature}">JHipster.</em>
+    </p>
+  </body>
+</html>
