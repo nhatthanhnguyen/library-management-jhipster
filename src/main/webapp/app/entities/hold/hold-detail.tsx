@@ -37,7 +37,7 @@ export const HoldDetail = () => {
           </dt>
           <dd>{holdEntity.endTime ? <TextFormat value={holdEntity.endTime} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}</dd>
           <dt>User</dt>
-          <dd>{holdEntity.user ? holdEntity.user.id : ''}</dd>
+          <dd>{holdEntity.user ? holdEntity.user.login : ''}</dd>
           <dt>Book Copy</dt>
           <dd>{holdEntity.bookCopy ? holdEntity.bookCopy.id : ''}</dd>
         </dl>

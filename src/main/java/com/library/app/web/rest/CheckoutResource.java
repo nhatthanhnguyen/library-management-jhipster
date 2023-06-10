@@ -1,13 +1,10 @@
 package com.library.app.web.rest;
 
-import com.library.app.domain.*;
-import com.library.app.repository.*;
-import com.library.app.security.SecurityUtils;
-import com.library.app.service.MailService;
+import com.library.app.domain.Checkout;
+import com.library.app.repository.CheckoutRepository;
 import com.library.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -42,30 +40,8 @@ public class CheckoutResource {
 
     private final CheckoutRepository checkoutRepository;
 
-    private final UserRepository userRepository;
-
-    private final AuthorityRepository authorityRepository;
-
-    private final WaitListRepository waitListRepository;
-
-    private final NotificationRepository notificationRepository;
-
-    private final MailService mailService;
-
-    public CheckoutResource(
-        CheckoutRepository checkoutRepository,
-        UserRepository userRepository,
-        AuthorityRepository authorityRepository,
-        WaitListRepository waitListRepository,
-        NotificationRepository notificationRepository,
-        MailService mailService
-    ) {
+    public CheckoutResource(CheckoutRepository checkoutRepository) {
         this.checkoutRepository = checkoutRepository;
-        this.userRepository = userRepository;
-        this.authorityRepository = authorityRepository;
-        this.waitListRepository = waitListRepository;
-        this.notificationRepository = notificationRepository;
-        this.mailService = mailService;
     }
 
     /**
@@ -116,32 +92,6 @@ public class CheckoutResource {
         }
 
         Checkout result = checkoutRepository.save(checkout);
-        return ResponseEntity
-            .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, checkout.getId().toString()))
-            .body(result);
-    }
-
-    @PutMapping("/checkouts/{id}/return")
-    public ResponseEntity<Checkout> returnBook(@PathVariable("id") Long id) {
-        Checkout checkout = checkoutRepository
-            .findById(id)
-            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
-        if (checkout.getIsReturned()) {
-            throw new BadRequestAlertException("The book is returned", ENTITY_NAME, "bookisreturned");
-        }
-        checkout.setEndTime(LocalDate.now());
-        checkout.setIsReturned(true);
-        Checkout result = checkoutRepository.save(checkout);
-        List<WaitList> waitList = waitListRepository.findByBookId(id);
-        for (WaitList wait : waitList) {
-            Notification notification = new Notification();
-            notification.setUser(wait.getUser());
-            notification.setSentAt(LocalDate.now());
-            notificationRepository.save(notification);
-            mailService.sendBookAvailable(wait.getUser(), wait.getBook());
-        }
-        waitListRepository.deleteByBookId(id);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, checkout.getId().toString()))
@@ -203,21 +153,20 @@ public class CheckoutResource {
      * {@code GET  /checkouts} : get all the checkouts.
      *
      * @param pageable the pagination information.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of checkouts in body.
      */
     @GetMapping("/checkouts")
     public ResponseEntity<List<Checkout>> getAllCheckouts(
         @org.springdoc.api.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false, value = "isReturned") Boolean isReturned
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
     ) {
         log.debug("REST request to get a page of Checkouts");
         Page<Checkout> page;
-        User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
-        Authority authority = authorityRepository.findById("ROLE_ADMIN").get();
-        if (user.getAuthorities().contains(authority)) {
-            page = checkoutRepository.findCheckouts(isReturned, pageable);
+        if (eagerload) {
+            page = checkoutRepository.findAllWithEagerRelationships(pageable);
         } else {
-            page = checkoutRepository.findCheckoutsByCurrentUser(user.getLogin(), isReturned, pageable);
+            page = checkoutRepository.findAll(pageable);
         }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -232,7 +181,7 @@ public class CheckoutResource {
     @GetMapping("/checkouts/{id}")
     public ResponseEntity<Checkout> getCheckout(@PathVariable Long id) {
         log.debug("REST request to get Checkout : {}", id);
-        Optional<Checkout> checkout = checkoutRepository.findById(id);
+        Optional<Checkout> checkout = checkoutRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(checkout);
     }
 

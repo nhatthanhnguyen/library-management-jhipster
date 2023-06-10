@@ -127,7 +127,7 @@ export const Notification = () => {
                     {notification.sentAt ? <TextFormat type="date" value={notification.sentAt} format={APP_LOCAL_DATE_FORMAT} /> : null}
                   </td>
                   <td>{notification.type}</td>
-                  <td>{notification.user ? notification.user.id : ''}</td>
+                  <td>{notification.user ? notification.user.login : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`/notification/${notification.id}`} color="info" size="sm" data-cy="entityDetailsButton">

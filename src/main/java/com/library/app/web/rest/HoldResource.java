@@ -1,12 +1,10 @@
 package com.library.app.web.rest;
 
-import com.library.app.domain.*;
-import com.library.app.repository.*;
-import com.library.app.security.SecurityUtils;
+import com.library.app.domain.Hold;
+import com.library.app.repository.HoldRepository;
 import com.library.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -16,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +31,6 @@ import tech.jhipster.web.util.ResponseUtil;
 @Transactional
 public class HoldResource {
 
-    private static class HoldResourceException extends RuntimeException {
-
-        private HoldResourceException(String message) {
-            super(message);
-        }
-    }
-
     private final Logger log = LoggerFactory.getLogger(HoldResource.class);
 
     private static final String ENTITY_NAME = "hold";
@@ -48,34 +40,8 @@ public class HoldResource {
 
     private final HoldRepository holdRepository;
 
-    private final UserRepository userRepository;
-
-    private final AuthorityRepository authorityRepository;
-
-    private final CheckoutRepository checkoutRepository;
-
-    private final BookRepository bookRepository;
-
-    private final WaitListRepository waitListRepository;
-
-    private final BookCopyRepository bookCopyRepository;
-
-    public HoldResource(
-        HoldRepository holdRepository,
-        UserRepository userRepository,
-        AuthorityRepository authorityRepository,
-        CheckoutRepository checkoutRepository,
-        BookRepository bookRepository,
-        WaitListRepository waitListRepository,
-        BookCopyRepository bookCopyRepository
-    ) {
+    public HoldResource(HoldRepository holdRepository) {
         this.holdRepository = holdRepository;
-        this.userRepository = userRepository;
-        this.authorityRepository = authorityRepository;
-        this.checkoutRepository = checkoutRepository;
-        this.bookRepository = bookRepository;
-        this.waitListRepository = waitListRepository;
-        this.bookCopyRepository = bookCopyRepository;
     }
 
     /**
@@ -95,49 +61,6 @@ public class HoldResource {
         return ResponseEntity
             .created(new URI("/api/holds/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
-            .body(result);
-    }
-
-    @PostMapping("/holds/book/{id}")
-    public String requestBook(@PathVariable("id") Long id) {
-        log.debug("REST request to request the Book: {}", id);
-        User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
-        Book book = bookRepository
-            .findById(id)
-            .orElseThrow(() -> new HoldResourceException(String.format("Book with id %s is not found", id)));
-        List<BookCopy> bookCopies = bookCopyRepository.findBookCopiesAvailable(id);
-        if (bookCopies.size() > 0) {
-            Hold hold = new Hold();
-            hold.setUser(user);
-            hold.setBookCopy(bookCopies.get(0));
-            hold.setStartTime(LocalDate.now());
-            holdRepository.save(hold);
-            return "You have hold the book " + book.getTitle();
-        }
-        WaitList waitList = new WaitList();
-        waitList.setBook(book);
-        waitList.setUser(user);
-        waitListRepository.save(waitList);
-        return "You have been added to wait list because the copy is not ready. Sorry for the inconvenient";
-    }
-
-    @PutMapping("/holds/{id}/borrow")
-    public ResponseEntity<Hold> borrow(@PathVariable("id") Long id) {
-        User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
-        Hold hold = holdRepository
-            .findById(id)
-            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
-        LocalDate currentTime = LocalDate.now();
-        hold.setEndTime(currentTime);
-        Hold result = holdRepository.save(hold);
-        Checkout checkout = new Checkout();
-        checkout.setBookCopy(result.getBookCopy());
-        checkout.setUser(user);
-        checkout.setStartTime(currentTime);
-        checkoutRepository.save(checkout);
-        return ResponseEntity
-            .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, hold.getId().toString()))
             .body(result);
     }
 
@@ -223,18 +146,20 @@ public class HoldResource {
      * {@code GET  /holds} : get all the holds.
      *
      * @param pageable the pagination information.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of holds in body.
      */
     @GetMapping("/holds")
-    public ResponseEntity<List<Hold>> getAllHolds(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<Hold>> getAllHolds(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+    ) {
         log.debug("REST request to get a page of Holds");
         Page<Hold> page;
-        User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
-        Authority authority = authorityRepository.findById("ROLE_ADMIN").get();
-        if (user.getAuthorities().contains(authority)) {
-            page = holdRepository.findAll(pageable);
+        if (eagerload) {
+            page = holdRepository.findAllWithEagerRelationships(pageable);
         } else {
-            page = holdRepository.findHoldsByCurrentUser(user.getLogin(), pageable);
+            page = holdRepository.findAll(pageable);
         }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -249,7 +174,7 @@ public class HoldResource {
     @GetMapping("/holds/{id}")
     public ResponseEntity<Hold> getHold(@PathVariable Long id) {
         log.debug("REST request to get Hold : {}", id);
-        Optional<Hold> hold = holdRepository.findById(id);
+        Optional<Hold> hold = holdRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(hold);
     }
 

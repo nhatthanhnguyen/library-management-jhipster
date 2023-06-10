@@ -29,7 +29,7 @@ export const WaitListDetail = () => {
           </dt>
           <dd>{waitListEntity.id}</dd>
           <dt>User</dt>
-          <dd>{waitListEntity.user ? waitListEntity.user.id : ''}</dd>
+          <dd>{waitListEntity.user ? waitListEntity.user.login : ''}</dd>
           <dt>Book</dt>
           <dd>{waitListEntity.book ? waitListEntity.book.title : ''}</dd>
         </dl>

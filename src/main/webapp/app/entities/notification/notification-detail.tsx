@@ -39,7 +39,7 @@ export const NotificationDetail = () => {
           </dt>
           <dd>{notificationEntity.type}</dd>
           <dt>User</dt>
-          <dd>{notificationEntity.user ? notificationEntity.user.id : ''}</dd>
+          <dd>{notificationEntity.user ? notificationEntity.user.login : ''}</dd>
         </dl>
         <Button tag={Link} to="/notification" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

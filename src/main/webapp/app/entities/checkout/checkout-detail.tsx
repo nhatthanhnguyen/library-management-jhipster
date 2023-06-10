@@ -45,7 +45,7 @@ export const CheckoutDetail = () => {
           </dt>
           <dd>{checkoutEntity.isReturned ? 'true' : 'false'}</dd>
           <dt>User</dt>
-          <dd>{checkoutEntity.user ? checkoutEntity.user.id : ''}</dd>
+          <dd>{checkoutEntity.user ? checkoutEntity.user.login : ''}</dd>
           <dt>Book Copy</dt>
           <dd>{checkoutEntity.bookCopy ? checkoutEntity.bookCopy.id : ''}</dd>
         </dl>

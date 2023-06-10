@@ -4,13 +4,14 @@ import { Button, Table } from 'reactstrap';
 import { Translate, TextFormat, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { ICheckout } from 'app/shared/model/checkout.model';
 import { getEntities } from './checkout.reducer';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 export const Checkout = () => {
   const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ export const Checkout = () => {
     overridePaginationStateWithQueryParams(getSortState(location, ITEMS_PER_PAGE, 'id'), location.search)
   );
 
+  const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
   const checkoutList = useAppSelector(state => state.checkout.entities);
   const loading = useAppSelector(state => state.checkout.loading);
   const totalItems = useAppSelector(state => state.checkout.totalItems);
@@ -89,10 +91,12 @@ export const Checkout = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          <Link to="/checkout/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp; Create a new Checkout
-          </Link>
+          {isAdmin && (
+            <Link to="/checkout/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+              <FontAwesomeIcon icon="plus" />
+              &nbsp; Create a new Checkout
+            </Link>
+          )}
         </div>
       </h2>
       <div className="table-responsive">
@@ -112,9 +116,11 @@ export const Checkout = () => {
                 <th className="hand" onClick={sort('isReturned')}>
                   Is Returned <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
-                  User <FontAwesomeIcon icon="sort" />
-                </th>
+                {isAdmin && (
+                  <th>
+                    User <FontAwesomeIcon icon="sort" />
+                  </th>
+                )}
                 <th>
                   Book Copy <FontAwesomeIcon icon="sort" />
                 </th>
@@ -134,31 +140,35 @@ export const Checkout = () => {
                   </td>
                   <td>{checkout.endTime ? <TextFormat type="date" value={checkout.endTime} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
                   <td>{checkout.isReturned ? 'true' : 'false'}</td>
-                  <td>{checkout.user ? checkout.user.id : ''}</td>
+                  {isAdmin && <td>{checkout.user ? checkout.user.login : ''}</td>}
                   <td>{checkout.bookCopy ? <Link to={`/book-copy/${checkout.bookCopy.id}`}>{checkout.bookCopy.id}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`/checkout/${checkout.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
-                      <Button
-                        tag={Link}
-                        to={`/checkout/${checkout.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/checkout/${checkout.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                      </Button>
+                      {isAdmin && (
+                        <>
+                          <Button
+                            tag={Link}
+                            to={`/checkout/${checkout.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                            color="primary"
+                            size="sm"
+                            data-cy="entityEditButton"
+                          >
+                            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                          </Button>
+                          <Button
+                            tag={Link}
+                            to={`/checkout/${checkout.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                            color="danger"
+                            size="sm"
+                            data-cy="entityDeleteButton"
+                          >
+                            <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

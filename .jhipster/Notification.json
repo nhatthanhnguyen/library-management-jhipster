@@ -23,6 +23,7 @@
   "readOnly": false,
   "relationships": [
     {
+      "otherEntityField": "login",
       "otherEntityName": "user",
       "relationshipName": "user",
       "relationshipType": "many-to-one"

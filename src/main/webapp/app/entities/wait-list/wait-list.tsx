@@ -120,7 +120,7 @@ export const WaitList = () => {
                       {waitList.id}
                     </Button>
                   </td>
-                  <td>{waitList.user ? waitList.user.id : ''}</td>
+                  <td>{waitList.user ? waitList.user.login : ''}</td>
                   <td>{waitList.book ? <Link to={`/book/${waitList.book.id}`}>{waitList.book.title}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">

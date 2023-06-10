@@ -152,12 +152,21 @@ public class NotificationResource {
      * {@code GET  /notifications} : get all the notifications.
      *
      * @param pageable the pagination information.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of notifications in body.
      */
     @GetMapping("/notifications")
-    public ResponseEntity<List<Notification>> getAllNotifications(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<Notification>> getAllNotifications(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+    ) {
         log.debug("REST request to get a page of Notifications");
-        Page<Notification> page = notificationRepository.findAll(pageable);
+        Page<Notification> page;
+        if (eagerload) {
+            page = notificationRepository.findAllWithEagerRelationships(pageable);
+        } else {
+            page = notificationRepository.findAll(pageable);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -171,7 +180,7 @@ public class NotificationResource {
     @GetMapping("/notifications/{id}")
     public ResponseEntity<Notification> getNotification(@PathVariable Long id) {
         log.debug("REST request to get Notification : {}", id);
-        Optional<Notification> notification = notificationRepository.findById(id);
+        Optional<Notification> notification = notificationRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(notification);
     }
 

@@ -50,10 +50,10 @@ relationship OneToMany {
 }
 
 relationship ManyToOne {
-    Checkout{user} to User,
-    Hold{user} to User,
-    Notification{user} to User,
-    WaitList{user} to User,
+    Checkout{user(login)} to User,
+    Hold{user(login)} to User,
+    Notification{user(login)} to User,
+    WaitList{user(login)} to User,
 }
 
 paginate Book, Author, Category, Publisher, BookCopy, Checkout, Hold, Notification, WaitList with pagination
