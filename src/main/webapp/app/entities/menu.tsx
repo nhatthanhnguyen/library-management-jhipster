@@ -1,8 +1,12 @@
 import React from 'react';
 
 import MenuItem from 'app/shared/layout/menus/menu-item';
+import { useAppSelector } from 'app/config/store';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 const EntitiesMenu = () => {
+  const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
   return (
     <>
       {/* prettier-ignore */}
@@ -27,12 +31,16 @@ const EntitiesMenu = () => {
       <MenuItem icon="asterisk" to="/hold">
         Hold
       </MenuItem>
-      <MenuItem icon="asterisk" to="/notification">
-        Notification
-      </MenuItem>
-      <MenuItem icon="asterisk" to="/wait-list">
-        Wait List
-      </MenuItem>
+      {isAdmin ? (
+        <>
+          <MenuItem icon="asterisk" to="/notification">
+            Notification
+          </MenuItem>
+          <MenuItem icon="asterisk" to="/wait-list">
+            Wait List
+          </MenuItem>
+        </>
+      ) : undefined}
       {/* jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here */}
     </>
   );

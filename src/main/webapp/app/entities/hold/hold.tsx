@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { Translate, TextFormat, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { getSortState, JhiItemCount, JhiPagination, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
+import { APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-
-import { IHold } from 'app/shared/model/hold.model';
 import { getEntities } from './hold.reducer';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
@@ -138,11 +136,11 @@ export const Hold = () => {
                   <td>{hold.bookCopy ? <Link to={`/book-copy/${hold.bookCopy.id}`}>{hold.bookCopy.id}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/hold/${hold.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
-                      </Button>
                       {isAdmin ? (
                         <>
+                          <Button tag={Link} to={`/hold/${hold.id}`} color="info" size="sm" data-cy="entityDetailsButton">
+                            <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                          </Button>
                           <Button
                             tag={Link}
                             to={`/hold/${hold.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}

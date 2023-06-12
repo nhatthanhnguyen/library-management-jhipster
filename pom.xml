@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.library.app</groupId>
@@ -257,7 +256,8 @@
             <version>${archunit-junit5.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- Adding the engine dependency to the surefire-plugin unfortunately does not work in the current version. -->
+        <!-- Adding the engine dependency to the surefire-plugin unfortunately does not work in the
+        current version. -->
         <!-- https://www.archunit.org/userguide/html/000_Index.html#_junit_5 -->
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
@@ -530,7 +530,7 @@
                         </execution>
                     </executions>
                     <configuration>
-                      <javaVersion>${java.version}</javaVersion>
+                        <javaVersion>${java.version}</javaVersion>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -544,7 +544,8 @@
                                 <goal>prepare-agent</goal>
                             </goals>
                         </execution>
-                        <!-- Ensures that the code coverage report for unit tests is created after unit tests have been run -->
+                        <!-- Ensures that the code coverage report for unit tests is created after
+                        unit tests have been run -->
                         <execution>
                             <id>post-unit-test</id>
                             <phase>test</phase>
@@ -558,7 +559,8 @@
                                 <goal>prepare-agent-integration</goal>
                             </goals>
                         </execution>
-                        <!-- Ensures that the code coverage report for integration tests is created after integration tests have been run -->
+                        <!-- Ensures that the code coverage report for integration tests is created
+                        after integration tests have been run -->
                         <execution>
                             <id>post-integration-tests</id>
                             <phase>post-integration-test</phase>
@@ -656,12 +658,15 @@
                     <configuration>
                         <rules>
                             <requireMavenVersion>
-                                <message>You are running an older version of Maven. JHipster requires at least Maven ${maven.version}</message>
+                                <message>You are running an older version of Maven. JHipster
+                                    requires at least Maven ${maven.version}</message>
                                 <version>[${maven.version},)</version>
                             </requireMavenVersion>
                             <requireJavaVersion>
-                                <message>You are running an incompatible version of Java. JHipster supports JDK 11 to 18.</message>
-                                <version>[11,12),[12,13),[13,14),[14,15),[15,16),[16,17),[17,18),[18,19)</version>
+                                <message>You are running an incompatible version of Java. JHipster
+                                    supports JDK 11 to 18.</message>
+                                <version>
+                                    [11,12),[12,13),[13,14),[14,15),[15,16),[16,17),[17,18),[18,19)</version>
                             </requireJavaVersion>
                         </rules>
                     </configuration>
@@ -728,7 +733,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
-               </plugin>
+                </plugin>
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
@@ -850,11 +855,15 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <condition property="skip.npm" value="true" else="false" >
+                                        <condition property="skip.npm" value="true" else="false">
                                             <and>
-                                                <available file="checksums.csv" filepath="${project.build.directory}" />
-                                                <available file="checksums.csv.old" filepath="${project.build.directory}" />
-                                                <filesmatch file1="${project.build.directory}/checksums.csv" file2="${project.build.directory}/checksums.csv.old" />
+                                                <available file="checksums.csv"
+                                                    filepath="${project.build.directory}" />
+                                                <available file="checksums.csv.old"
+                                                    filepath="${project.build.directory}" />
+                                                <filesmatch
+                                                    file1="${project.build.directory}/checksums.csv"
+                                                    file2="${project.build.directory}/checksums.csv.old" />
                                             </and>
                                         </condition>
                                     </target>
@@ -938,7 +947,8 @@
                             <artifactId>maven-failsafe-plugin</artifactId>
                             <version>${maven-failsafe-plugin.version}</version>
                             <configuration>
-                                <!-- Due to spring-boot repackage, without adding this property test classes are not found
+                                <!-- Due to spring-boot repackage, without adding this property test
+                                classes are not found
                                      See https://github.com/spring-projects/spring-boot/issues/6254 -->
                                 <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                                 <!-- Force alphabetical order to have a reproducible build -->
@@ -969,14 +979,17 @@
                             <artifactId>liquibase-maven-plugin</artifactId>
                             <version>${liquibase.version}</version>
                             <configuration>
-                                <changeLogFile>${project.basedir}/src/main/resources/config/liquibase/master.xml</changeLogFile>
-                                <diffChangeLogFile>${project.basedir}/src/main/resources/config/liquibase/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
+                                <changeLogFile>
+                                    ${project.basedir}/src/main/resources/config/liquibase/master.xml</changeLogFile>
+                                <diffChangeLogFile>
+                                    ${project.basedir}/src/main/resources/config/liquibase/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
                                 <driver>org.postgresql.Driver</driver>
                                 <url>jdbc:postgresql://localhost:5432/LibraryManagement</url>
                                 <defaultSchemaName></defaultSchemaName>
                                 <username>LibraryManagement</username>
                                 <password></password>
-                                <referenceUrl>hibernate:spring:com.library.app.domain?dialect=tech.jhipster.domain.util.FixedPostgreSQL10Dialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
+                                <referenceUrl>
+                                    hibernate:spring:com.library.app.domain?dialect=tech.jhipster.domain.util.FixedPostgreSQL10Dialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
                                 <verbose>true</verbose>
                                 <logging>debug</logging>
                                 <contexts>!test</contexts>
@@ -1038,7 +1051,8 @@
                             <artifactId>maven-failsafe-plugin</artifactId>
                             <version>${maven-failsafe-plugin.version}</version>
                             <configuration>
-                                <!-- Due to spring-boot repackage, without adding this property test classes are not found
+                                <!-- Due to spring-boot repackage, without adding this property test
+                                classes are not found
                                      See https://github.com/spring-projects/spring-boot/issues/6254 -->
                                 <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                                 <!-- Force alphabetical order to have a reproducible build -->
@@ -1069,14 +1083,17 @@
                             <artifactId>liquibase-maven-plugin</artifactId>
                             <version>${liquibase.version}</version>
                             <configuration>
-                                <changeLogFile>${project.basedir}/src/main/resources/config/liquibase/master.xml</changeLogFile>
-                                <diffChangeLogFile>${project.basedir}/src/main/resources/config/liquibase/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
+                                <changeLogFile>
+                                    ${project.basedir}/src/main/resources/config/liquibase/master.xml</changeLogFile>
+                                <diffChangeLogFile>
+                                    ${project.basedir}/src/main/resources/config/liquibase/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
                                 <driver>org.postgresql.Driver</driver>
                                 <url>jdbc:postgresql://localhost:5432/LibraryManagement</url>
                                 <defaultSchemaName></defaultSchemaName>
                                 <username>LibraryManagement</username>
                                 <password></password>
-                                <referenceUrl>hibernate:spring:com.library.app.domain?dialect=tech.jhipster.domain.util.FixedPostgreSQL10Dialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
+                                <referenceUrl>
+                                    hibernate:spring:com.library.app.domain?dialect=tech.jhipster.domain.util.FixedPostgreSQL10Dialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
                                 <verbose>true</verbose>
                                 <logging>debug</logging>
                                 <contexts>!test</contexts>
@@ -1188,7 +1205,8 @@
             </build>
             <properties>
                 <!-- default Spring profiles -->
-                <spring.profiles.active>prod${profile.api-docs}${profile.tls}${profile.e2e}${profile.no-liquibase}</spring.profiles.active>
+                <spring.profiles.active>
+                    prod${profile.api-docs}${profile.tls}${profile.e2e}${profile.no-liquibase}</spring.profiles.active>
             </properties>
         </profile>
         <profile>
@@ -1205,7 +1223,8 @@
         <profile>
             <!--
                 Profile for applying IDE-specific configuration.
-                At the moment it configures MapStruct and Hibernate JPA Metamodel Generator, which you need when working
+                At the moment it configures MapStruct and Hibernate JPA Metamodel Generator, which you need when
+            working
                 with DTOs and entity filtering.
             -->
             <id>IDE</id>
@@ -1265,7 +1284,7 @@
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore/>
+                                                <ignore />
                                             </action>
                                         </pluginExecution>
                                         <pluginExecution>
@@ -1279,7 +1298,7 @@
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore/>
+                                                <ignore />
                                             </action>
                                         </pluginExecution>
                                     </pluginExecutions>
