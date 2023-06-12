@@ -1,24 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Button, FormGroup, Input, InputGroup, Table } from 'reactstrap';
 import { getSortState, JhiItemCount, JhiPagination } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { AUTHORITIES } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
-import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
+import { overridePaginationSearchStateWithQueryParams, overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities } from './book.reducer';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { getSortSearchState } from 'app/shared/custom/pagination-custom-utils';
 
 export const Book = () => {
+  let searchRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useAppDispatch();
 
   const location = useLocation();
   const navigate = useNavigate();
 
   const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getSortState(location, ITEMS_PER_PAGE, 'id'), location.search)
+    overridePaginationSearchStateWithQueryParams(getSortSearchState(location, ITEMS_PER_PAGE, 'id', 'asc', ''), location.search)
   );
 
   const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
@@ -26,32 +28,34 @@ export const Book = () => {
   const loading = useAppSelector(state => state.book.loading);
   const totalItems = useAppSelector(state => state.book.totalItems);
 
-  const getAllEntities = () => {
+  const getAllEntities = (query: string) => {
     dispatch(
       getEntities({
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
+        query: query || '',
       })
     );
   };
 
-  const sortEntities = () => {
-    getAllEntities();
-    const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`;
+  const sortEntities = (query: string) => {
+    getAllEntities(query);
+    const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}&q=${paginationState.query}`;
     if (location.search !== endURL) {
       navigate(`${location.pathname}${endURL}`);
     }
   };
 
   useEffect(() => {
-    sortEntities();
-  }, [paginationState.activePage, paginationState.order, paginationState.sort]);
+    sortEntities(paginationState.query);
+  }, [paginationState.activePage, paginationState.order, paginationState.sort, paginationState.query]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const page = params.get('page');
     const sort = params.get(SORT);
+    const query = params.get('q');
     if (page && sort) {
       const sortSplit = sort.split(',');
       setPaginationState({
@@ -59,6 +63,7 @@ export const Book = () => {
         activePage: +page,
         sort: sortSplit[0],
         order: sortSplit[1],
+        query,
       });
     }
   }, [location.search]);
@@ -78,7 +83,14 @@ export const Book = () => {
     });
 
   const handleSyncList = () => {
-    sortEntities();
+    sortEntities('');
+  };
+
+  const handleSearch = () => {
+    setPaginationState({
+      ...paginationState,
+      query: searchRef.current.value,
+    });
   };
 
   return (
@@ -97,6 +109,12 @@ export const Book = () => {
           )}
         </div>
       </h2>
+      <InputGroup>
+        <input type="search" placeholder="Search books" ref={searchRef} className="form-control" />
+        <Button onClick={handleSearch}>
+          <FontAwesomeIcon icon="search" />
+        </Button>
+      </InputGroup>
       <div className="table-responsive">
         {bookList && bookList.length > 0 ? (
           <Table responsive>
@@ -108,7 +126,7 @@ export const Book = () => {
                 <th className="hand" onClick={sort('title')}>
                   Title <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th className="hand" onClick={sort('category.name')}>
                   Category <FontAwesomeIcon icon="sort" />
                 </th>
                 <th />

@@ -35,6 +35,16 @@ public interface BookRepository extends BookRepositoryWithBagRelationships, JpaR
     )
     Page<Book> findAllWithToOneRelationships(Pageable pageable);
 
+    @Query(
+        value = "select b from Book b where " +
+        "(lower(b.title) like concat('%', lower(:query), '%') " +
+        "or (lower(b.category.name) like concat('%', lower(:query), '%')))",
+        countQuery = "select count(b) from Book b where " +
+        "(lower(b.title) like concat('%', lower(:query), '%') " +
+        "or (lower(b.category.name) like concat('%', lower(:query), '%')))"
+    )
+    Page<Book> findBooksByText(@Param("query") String query, Pageable pageable);
+
     @Query("select distinct book from Book book left join fetch book.category")
     List<Book> findAllWithToOneRelationships();
 

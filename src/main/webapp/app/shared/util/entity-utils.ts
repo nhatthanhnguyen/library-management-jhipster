@@ -1,5 +1,6 @@
 import pick from 'lodash/pick';
 import { IPaginationBaseState } from 'react-jhipster';
+import { IPaginationSearchState } from 'app/shared/custom/pagination-custom-utils';
 
 /**
  * Removes fields with an 'id' field that equals ''.
@@ -33,4 +34,18 @@ export const overridePaginationStateWithQueryParams = (paginationBaseState: IPag
     paginationBaseState.order = sortSplit[1];
   }
   return paginationBaseState;
+};
+
+export const overridePaginationSearchStateWithQueryParams = (paginationState: IPaginationSearchState, locationSearch: string) => {
+  const params = new URLSearchParams(locationSearch);
+  const page = params.get('page');
+  const sort = params.get('sort');
+  paginationState.query = params.get('q');
+  if (page && sort) {
+    const sortSplit = sort.split(',');
+    paginationState.activePage = +page;
+    paginationState.sort = sortSplit[0];
+    paginationState.order = sortSplit[1];
+  }
+  return paginationState;
 };

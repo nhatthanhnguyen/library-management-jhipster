@@ -155,12 +155,13 @@ public class BookResource {
     @GetMapping("/books")
     public ResponseEntity<List<Book>> getAllBooks(
         @org.springdoc.api.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload,
+        @RequestParam(value = "q", required = false, defaultValue = "") String query
     ) {
         log.debug("REST request to get a page of Books");
         Page<Book> page;
-        if (eagerload) {
-            page = bookRepository.findAllWithEagerRelationships(pageable);
+        if (query != null) {
+            page = bookRepository.findBooksByText(query, pageable);
         } else {
             page = bookRepository.findAll(pageable);
         }

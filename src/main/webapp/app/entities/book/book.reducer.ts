@@ -19,8 +19,8 @@ const apiUrl = 'api/books';
 
 // Actions
 
-export const getEntities = createAsyncThunk('book/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}&` : '?'}cacheBuster=${new Date().getTime()}`;
+export const getEntities = createAsyncThunk('book/fetch_entity_list', async ({ page, size, sort, query }: IQueryParams) => {
+  const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}&q=${query}&` : '?'}cacheBuster=${new Date().getTime()}`;
   return axios.get<IBook[]>(requestUrl);
 });
 
