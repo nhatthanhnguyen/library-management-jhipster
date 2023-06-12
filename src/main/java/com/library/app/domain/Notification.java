@@ -1,9 +1,9 @@
 package com.library.app.domain;
 
+import com.library.app.domain.enumeration.Type;
 import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.*;
-import javax.validation.constraints.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -27,9 +27,9 @@ public class Notification implements Serializable {
     @Column(name = "sent_at")
     private LocalDate sentAt;
 
-    @Size(max = 20)
-    @Column(name = "type", length = 20)
-    private String type;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private Type type;
 
     @ManyToOne
     private User user;
@@ -62,16 +62,16 @@ public class Notification implements Serializable {
         this.sentAt = sentAt;
     }
 
-    public String getType() {
+    public Type getType() {
         return this.type;
     }
 
-    public Notification type(String type) {
+    public Notification type(Type type) {
         this.setType(type);
         return this;
     }
 
-    public void setType(String type) {
+    public void setType(Type type) {
         this.type = type;
     }
 

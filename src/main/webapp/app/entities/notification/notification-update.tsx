@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { IUser } from 'app/shared/model/user.model';
 import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
 import { INotification } from 'app/shared/model/notification.model';
+import { Type } from 'app/shared/model/enumerations/type.model';
 import { getEntity, updateEntity, createEntity, reset } from './notification.reducer';
 
 export const NotificationUpdate = () => {
@@ -26,6 +27,7 @@ export const NotificationUpdate = () => {
   const loading = useAppSelector(state => state.notification.loading);
   const updating = useAppSelector(state => state.notification.updating);
   const updateSuccess = useAppSelector(state => state.notification.updateSuccess);
+  const typeValues = Object.keys(Type);
 
   const handleClose = () => {
     navigate('/notification' + location.search);
@@ -65,6 +67,7 @@ export const NotificationUpdate = () => {
     isNew
       ? {}
       : {
+          type: 'AVAILABLE',
           ...notificationEntity,
           user: notificationEntity?.user?.id,
         };
@@ -86,16 +89,13 @@ export const NotificationUpdate = () => {
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? <ValidatedField name="id" required readOnly id="notification-id" label="ID" validate={{ required: true }} /> : null}
               <ValidatedField label="Sent At" id="notification-sentAt" name="sentAt" data-cy="sentAt" type="date" />
-              <ValidatedField
-                label="Type"
-                id="notification-type"
-                name="type"
-                data-cy="type"
-                type="text"
-                validate={{
-                  maxLength: { value: 20, message: 'This field cannot be longer than 20 characters.' },
-                }}
-              />
+              <ValidatedField label="Type" id="notification-type" name="type" data-cy="type" type="select">
+                {typeValues.map(type => (
+                  <option value={type} key={type}>
+                    {type}
+                  </option>
+                ))}
+              </ValidatedField>
               <ValidatedField id="notification-user" name="user" data-cy="user" label="User" type="select">
                 <option value="" key="0" />
                 {users

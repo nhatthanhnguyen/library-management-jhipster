@@ -11,9 +11,8 @@
     },
     {
       "fieldName": "type",
-      "fieldType": "String",
-      "fieldValidateRules": ["maxlength"],
-      "fieldValidateRulesMaxlength": "20"
+      "fieldType": "Type",
+      "fieldValues": "AVAILABLE,RETURN"
     }
   ],
   "fluentMethods": true,

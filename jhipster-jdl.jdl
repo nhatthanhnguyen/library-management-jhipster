@@ -29,9 +29,14 @@ entity Hold {
     endTime LocalDate,
 }
 
+enum Type {
+    AVAILABLE,
+    RETURN
+}
+
 entity Notification {
     sentAt LocalDate,
-    type String maxlength(20),
+    type Type,
 }
 
 entity WaitList

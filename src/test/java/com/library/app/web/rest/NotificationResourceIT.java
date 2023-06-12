@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.library.app.IntegrationTest;
 import com.library.app.domain.Notification;
+import com.library.app.domain.enumeration.Type;
 import com.library.app.repository.NotificationRepository;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -43,8 +44,8 @@ class NotificationResourceIT {
     private static final LocalDate DEFAULT_SENT_AT = LocalDate.ofEpochDay(0L);
     private static final LocalDate UPDATED_SENT_AT = LocalDate.now(ZoneId.systemDefault());
 
-    private static final String DEFAULT_TYPE = "AAAAAAAAAA";
-    private static final String UPDATED_TYPE = "BBBBBBBBBB";
+    private static final Type DEFAULT_TYPE = Type.AVAILABLE;
+    private static final Type UPDATED_TYPE = Type.RETURN;
 
     private static final String ENTITY_API_URL = "/api/notifications";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -141,7 +142,7 @@ class NotificationResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(notification.getId().intValue())))
             .andExpect(jsonPath("$.[*].sentAt").value(hasItem(DEFAULT_SENT_AT.toString())))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE)));
+            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -174,7 +175,7 @@ class NotificationResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(notification.getId().intValue()))
             .andExpect(jsonPath("$.sentAt").value(DEFAULT_SENT_AT.toString()))
-            .andExpect(jsonPath("$.type").value(DEFAULT_TYPE));
+            .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()));
     }
 
     @Test
