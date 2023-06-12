@@ -14,10 +14,10 @@
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="start_time" type="date">
+            <column name="start_time" type="${datetimeType}">
                 <constraints nullable="true" />
             </column>
-            <column name="end_time" type="date">
+            <column name="end_time" type="${datetimeType}">
                 <constraints nullable="true" />
             </column>
             <column name="is_returned" type="boolean">
@@ -31,6 +31,8 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+        <dropDefaultValue tableName="checkout" columnName="start_time" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="checkout" columnName="end_time" columnDataType="${datetimeType}"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

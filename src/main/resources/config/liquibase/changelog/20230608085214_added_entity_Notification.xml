@@ -14,10 +14,10 @@
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="sent_at" type="date">
+            <column name="sent_at" type="${datetimeType}">
                 <constraints nullable="true" />
             </column>
-            <column name="type" type="varchar(20)">
+            <column name="type" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
             <column name="user_id" type="bigint">
@@ -25,6 +25,7 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+        <dropDefaultValue tableName="notification" columnName="sent_at" columnDataType="${datetimeType}"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

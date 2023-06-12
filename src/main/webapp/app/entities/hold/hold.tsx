@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { getSortState, JhiItemCount, JhiPagination, TextFormat } from 'react-jhipster';
+import { Translate, TextFormat, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
+import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+
+import { IHold } from 'app/shared/model/hold.model';
 import { getEntities } from './hold.reducer';
-import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 export const Hold = () => {
   const dispatch = useAppDispatch();
@@ -21,7 +22,6 @@ export const Hold = () => {
     overridePaginationStateWithQueryParams(getSortState(location, ITEMS_PER_PAGE, 'id'), location.search)
   );
 
-  const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
   const holdList = useAppSelector(state => state.hold.entities);
   const loading = useAppSelector(state => state.hold.loading);
   const totalItems = useAppSelector(state => state.hold.totalItems);
@@ -89,12 +89,10 @@ export const Hold = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          {isAdmin && (
-            <Link to="/hold/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-              <FontAwesomeIcon icon="plus" />
-              &nbsp; Create a new Hold
-            </Link>
-          )}
+          <Link to="/hold/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp; Create a new Hold
+          </Link>
         </div>
       </h2>
       <div className="table-responsive">
@@ -111,11 +109,9 @@ export const Hold = () => {
                 <th className="hand" onClick={sort('endTime')}>
                   End Time <FontAwesomeIcon icon="sort" />
                 </th>
-                {isAdmin && (
-                  <th>
-                    User <FontAwesomeIcon icon="sort" />
-                  </th>
-                )}
+                <th>
+                  User <FontAwesomeIcon icon="sort" />
+                </th>
                 <th>
                   Book Copy <FontAwesomeIcon icon="sort" />
                 </th>
@@ -130,42 +126,33 @@ export const Hold = () => {
                       {hold.id}
                     </Button>
                   </td>
-                  <td>{hold.startTime ? <TextFormat type="date" value={hold.startTime} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
-                  <td>{hold.endTime ? <TextFormat type="date" value={hold.endTime} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
-                  {isAdmin && <td>{hold.user ? hold.user.login : ''}</td>}
+                  <td>{hold.startTime ? <TextFormat type="date" value={hold.startTime} format={APP_DATE_FORMAT} /> : null}</td>
+                  <td>{hold.endTime ? <TextFormat type="date" value={hold.endTime} format={APP_DATE_FORMAT} /> : null}</td>
+                  <td>{hold.user ? hold.user.login : ''}</td>
                   <td>{hold.bookCopy ? <Link to={`/book-copy/${hold.bookCopy.id}`}>{hold.bookCopy.id}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
-                      {isAdmin ? (
-                        <>
-                          <Button tag={Link} to={`/hold/${hold.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                            <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
-                          </Button>
-                          <Button
-                            tag={Link}
-                            to={`/hold/${hold.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                            color="primary"
-                            size="sm"
-                            data-cy="entityEditButton"
-                          >
-                            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                          </Button>
-                          <Button
-                            tag={Link}
-                            to={`/hold/${hold.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                            color="danger"
-                            size="sm"
-                            data-cy="entityDeleteButton"
-                          >
-                            <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                          </Button>
-                        </>
-                      ) : (
-                        <Button color="danger" size="sm">
-                          <FontAwesomeIcon icon="trash" />
-                          &nbsp; Cancel
-                        </Button>
-                      )}
+                      <Button tag={Link} to={`/hold/${hold.id}`} color="info" size="sm" data-cy="entityDetailsButton">
+                        <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                      </Button>
+                      <Button
+                        tag={Link}
+                        to={`/hold/${hold.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                        color="primary"
+                        size="sm"
+                        data-cy="entityEditButton"
+                      >
+                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                      </Button>
+                      <Button
+                        tag={Link}
+                        to={`/hold/${hold.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                        color="danger"
+                        size="sm"
+                        data-cy="entityDeleteButton"
+                      >
+                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                      </Button>
                     </div>
                   </td>
                 </tr>

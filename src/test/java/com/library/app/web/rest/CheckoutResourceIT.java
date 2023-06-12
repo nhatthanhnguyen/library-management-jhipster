@@ -9,8 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.library.app.IntegrationTest;
 import com.library.app.domain.Checkout;
 import com.library.app.repository.CheckoutRepository;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -40,11 +40,11 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class CheckoutResourceIT {
 
-    private static final LocalDate DEFAULT_START_TIME = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_START_TIME = LocalDate.now(ZoneId.systemDefault());
+    private static final Instant DEFAULT_START_TIME = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_START_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final LocalDate DEFAULT_END_TIME = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_END_TIME = LocalDate.now(ZoneId.systemDefault());
+    private static final Instant DEFAULT_END_TIME = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_END_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
     private static final Boolean DEFAULT_IS_RETURNED = false;
     private static final Boolean UPDATED_IS_RETURNED = true;

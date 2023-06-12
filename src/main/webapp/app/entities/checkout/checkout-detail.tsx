@@ -31,15 +31,11 @@ export const CheckoutDetail = () => {
           <dt>
             <span id="startTime">Start Time</span>
           </dt>
-          <dd>
-            {checkoutEntity.startTime ? <TextFormat value={checkoutEntity.startTime} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}
-          </dd>
+          <dd>{checkoutEntity.startTime ? <TextFormat value={checkoutEntity.startTime} type="date" format={APP_DATE_FORMAT} /> : null}</dd>
           <dt>
             <span id="endTime">End Time</span>
           </dt>
-          <dd>
-            {checkoutEntity.endTime ? <TextFormat value={checkoutEntity.endTime} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}
-          </dd>
+          <dd>{checkoutEntity.endTime ? <TextFormat value={checkoutEntity.endTime} type="date" format={APP_DATE_FORMAT} /> : null}</dd>
           <dt>
             <span id="isReturned">Is Returned</span>
           </dt>

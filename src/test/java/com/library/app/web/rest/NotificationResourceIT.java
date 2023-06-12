@@ -10,8 +10,8 @@ import com.library.app.IntegrationTest;
 import com.library.app.domain.Notification;
 import com.library.app.domain.enumeration.Type;
 import com.library.app.repository.NotificationRepository;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -41,8 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class NotificationResourceIT {
 
-    private static final LocalDate DEFAULT_SENT_AT = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_SENT_AT = LocalDate.now(ZoneId.systemDefault());
+    private static final Instant DEFAULT_SENT_AT = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_SENT_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
     private static final Type DEFAULT_TYPE = Type.AVAILABLE;
     private static final Type UPDATED_TYPE = Type.RETURN;

@@ -52,6 +52,9 @@ export const HoldUpdate = () => {
   }, [updateSuccess]);
 
   const saveEntity = values => {
+    values.startTime = convertDateTimeToServer(values.startTime);
+    values.endTime = convertDateTimeToServer(values.endTime);
+
     const entity = {
       ...holdEntity,
       ...values,
@@ -68,9 +71,14 @@ export const HoldUpdate = () => {
 
   const defaultValues = () =>
     isNew
-      ? {}
+      ? {
+          startTime: displayDefaultDateTime(),
+          endTime: displayDefaultDateTime(),
+        }
       : {
           ...holdEntity,
+          startTime: convertDateTimeFromServer(holdEntity.startTime),
+          endTime: convertDateTimeFromServer(holdEntity.endTime),
           user: holdEntity?.user?.id,
           bookCopy: holdEntity?.bookCopy?.id,
         };
@@ -91,8 +99,22 @@ export const HoldUpdate = () => {
           ) : (
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? <ValidatedField name="id" required readOnly id="hold-id" label="ID" validate={{ required: true }} /> : null}
-              <ValidatedField label="Start Time" id="hold-startTime" name="startTime" data-cy="startTime" type="date" />
-              <ValidatedField label="End Time" id="hold-endTime" name="endTime" data-cy="endTime" type="date" />
+              <ValidatedField
+                label="Start Time"
+                id="hold-startTime"
+                name="startTime"
+                data-cy="startTime"
+                type="datetime-local"
+                placeholder="YYYY-MM-DD HH:mm"
+              />
+              <ValidatedField
+                label="End Time"
+                id="hold-endTime"
+                name="endTime"
+                data-cy="endTime"
+                type="datetime-local"
+                placeholder="YYYY-MM-DD HH:mm"
+              />
               <ValidatedField id="hold-user" name="user" data-cy="user" label="User" type="select">
                 <option value="" key="0" />
                 {users

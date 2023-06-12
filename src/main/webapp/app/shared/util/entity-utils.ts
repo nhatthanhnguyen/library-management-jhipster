@@ -40,12 +40,13 @@ export const overridePaginationSearchStateWithQueryParams = (paginationState: IP
   const params = new URLSearchParams(locationSearch);
   const page = params.get('page');
   const sort = params.get('sort');
-  paginationState.query = params.get('q');
+  const query = params.get('q');
   if (page && sort) {
     const sortSplit = sort.split(',');
     paginationState.activePage = +page;
     paginationState.sort = sortSplit[0];
     paginationState.order = sortSplit[1];
+    paginationState.query = query == null ? '' : query;
   }
   return paginationState;
 };

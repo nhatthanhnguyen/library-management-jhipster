@@ -31,11 +31,11 @@ export const HoldDetail = () => {
           <dt>
             <span id="startTime">Start Time</span>
           </dt>
-          <dd>{holdEntity.startTime ? <TextFormat value={holdEntity.startTime} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}</dd>
+          <dd>{holdEntity.startTime ? <TextFormat value={holdEntity.startTime} type="date" format={APP_DATE_FORMAT} /> : null}</dd>
           <dt>
             <span id="endTime">End Time</span>
           </dt>
-          <dd>{holdEntity.endTime ? <TextFormat value={holdEntity.endTime} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}</dd>
+          <dd>{holdEntity.endTime ? <TextFormat value={holdEntity.endTime} type="date" format={APP_DATE_FORMAT} /> : null}</dd>
           <dt>User</dt>
           <dd>{holdEntity.user ? holdEntity.user.login : ''}</dd>
           <dt>Book Copy</dt>

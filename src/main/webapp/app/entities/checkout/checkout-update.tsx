@@ -52,6 +52,9 @@ export const CheckoutUpdate = () => {
   }, [updateSuccess]);
 
   const saveEntity = values => {
+    values.startTime = convertDateTimeToServer(values.startTime);
+    values.endTime = convertDateTimeToServer(values.endTime);
+
     const entity = {
       ...checkoutEntity,
       ...values,
@@ -68,9 +71,14 @@ export const CheckoutUpdate = () => {
 
   const defaultValues = () =>
     isNew
-      ? {}
+      ? {
+          startTime: displayDefaultDateTime(),
+          endTime: displayDefaultDateTime(),
+        }
       : {
           ...checkoutEntity,
+          startTime: convertDateTimeFromServer(checkoutEntity.startTime),
+          endTime: convertDateTimeFromServer(checkoutEntity.endTime),
           user: checkoutEntity?.user?.id,
           bookCopy: checkoutEntity?.bookCopy?.id,
         };
@@ -91,8 +99,22 @@ export const CheckoutUpdate = () => {
           ) : (
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? <ValidatedField name="id" required readOnly id="checkout-id" label="ID" validate={{ required: true }} /> : null}
-              <ValidatedField label="Start Time" id="checkout-startTime" name="startTime" data-cy="startTime" type="date" />
-              <ValidatedField label="End Time" id="checkout-endTime" name="endTime" data-cy="endTime" type="date" />
+              <ValidatedField
+                label="Start Time"
+                id="checkout-startTime"
+                name="startTime"
+                data-cy="startTime"
+                type="datetime-local"
+                placeholder="YYYY-MM-DD HH:mm"
+              />
+              <ValidatedField
+                label="End Time"
+                id="checkout-endTime"
+                name="endTime"
+                data-cy="endTime"
+                type="datetime-local"
+                placeholder="YYYY-MM-DD HH:mm"
+              />
               <ValidatedField label="Is Returned" id="checkout-isReturned" name="isReturned" data-cy="isReturned" check type="checkbox" />
               <ValidatedField id="checkout-user" name="user" data-cy="user" label="User" type="select">
                 <option value="" key="0" />

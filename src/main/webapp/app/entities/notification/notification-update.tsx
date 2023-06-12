@@ -50,6 +50,8 @@ export const NotificationUpdate = () => {
   }, [updateSuccess]);
 
   const saveEntity = values => {
+    values.sentAt = convertDateTimeToServer(values.sentAt);
+
     const entity = {
       ...notificationEntity,
       ...values,
@@ -65,10 +67,13 @@ export const NotificationUpdate = () => {
 
   const defaultValues = () =>
     isNew
-      ? {}
+      ? {
+          sentAt: displayDefaultDateTime(),
+        }
       : {
           type: 'AVAILABLE',
           ...notificationEntity,
+          sentAt: convertDateTimeFromServer(notificationEntity.sentAt),
           user: notificationEntity?.user?.id,
         };
 
@@ -88,7 +93,14 @@ export const NotificationUpdate = () => {
           ) : (
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? <ValidatedField name="id" required readOnly id="notification-id" label="ID" validate={{ required: true }} /> : null}
-              <ValidatedField label="Sent At" id="notification-sentAt" name="sentAt" data-cy="sentAt" type="date" />
+              <ValidatedField
+                label="Sent At"
+                id="notification-sentAt"
+                name="sentAt"
+                data-cy="sentAt"
+                type="datetime-local"
+                placeholder="YYYY-MM-DD HH:mm"
+              />
               <ValidatedField label="Type" id="notification-type" name="type" data-cy="type" type="select">
                 {typeValues.map(type => (
                   <option value={type} key={type}>

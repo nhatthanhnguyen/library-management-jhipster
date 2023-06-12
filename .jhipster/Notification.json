@@ -7,7 +7,7 @@
   "fields": [
     {
       "fieldName": "sentAt",
-      "fieldType": "LocalDate"
+      "fieldType": "Instant"
     },
     {
       "fieldName": "type",

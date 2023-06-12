@@ -19,14 +19,14 @@ entity BookCopy {
 }
 
 entity Checkout {
-    startTime LocalDate,
-    endTime LocalDate,
+    startTime Instant,
+    endTime Instant,
     isReturned Boolean,
 }
 
 entity Hold {
-    startTime LocalDate,
-    endTime LocalDate,
+    startTime Instant,
+    endTime Instant,
 }
 
 enum Type {
@@ -35,7 +35,7 @@ enum Type {
 }
 
 entity Notification {
-    sentAt LocalDate,
+    sentAt Instant,
     type Type,
 }
 

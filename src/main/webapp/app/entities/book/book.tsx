@@ -29,12 +29,13 @@ export const Book = () => {
   const totalItems = useAppSelector(state => state.book.totalItems);
 
   const getAllEntities = (query: string) => {
+    const q = query == null ? '' : query;
     dispatch(
       getEntities({
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
-        query: query || '',
+        query: q,
       })
     );
   };
@@ -63,7 +64,7 @@ export const Book = () => {
         activePage: +page,
         sort: sortSplit[0],
         order: sortSplit[1],
-        query,
+        query: query == null ? '' : query,
       });
     }
   }, [location.search]);

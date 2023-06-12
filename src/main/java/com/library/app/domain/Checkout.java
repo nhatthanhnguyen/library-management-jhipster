@@ -2,7 +2,7 @@ package com.library.app.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.Instant;
 import javax.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -25,10 +25,10 @@ public class Checkout implements Serializable {
     private Long id;
 
     @Column(name = "start_time")
-    private LocalDate startTime;
+    private Instant startTime;
 
     @Column(name = "end_time")
-    private LocalDate endTime;
+    private Instant endTime;
 
     @Column(name = "is_returned")
     private Boolean isReturned;
@@ -55,29 +55,29 @@ public class Checkout implements Serializable {
         this.id = id;
     }
 
-    public LocalDate getStartTime() {
+    public Instant getStartTime() {
         return this.startTime;
     }
 
-    public Checkout startTime(LocalDate startTime) {
+    public Checkout startTime(Instant startTime) {
         this.setStartTime(startTime);
         return this;
     }
 
-    public void setStartTime(LocalDate startTime) {
+    public void setStartTime(Instant startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDate getEndTime() {
+    public Instant getEndTime() {
         return this.endTime;
     }
 
-    public Checkout endTime(LocalDate endTime) {
+    public Checkout endTime(Instant endTime) {
         this.setEndTime(endTime);
         return this;
     }
 
-    public void setEndTime(LocalDate endTime) {
+    public void setEndTime(Instant endTime) {
         this.endTime = endTime;
     }
 

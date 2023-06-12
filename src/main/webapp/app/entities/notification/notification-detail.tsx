@@ -32,7 +32,7 @@ export const NotificationDetail = () => {
             <span id="sentAt">Sent At</span>
           </dt>
           <dd>
-            {notificationEntity.sentAt ? <TextFormat value={notificationEntity.sentAt} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}
+            {notificationEntity.sentAt ? <TextFormat value={notificationEntity.sentAt} type="date" format={APP_DATE_FORMAT} /> : null}
           </dd>
           <dt>
             <span id="type">Type</span>

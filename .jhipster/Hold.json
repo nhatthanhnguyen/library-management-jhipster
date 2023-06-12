@@ -7,11 +7,11 @@
   "fields": [
     {
       "fieldName": "startTime",
-      "fieldType": "LocalDate"
+      "fieldType": "Instant"
     },
     {
       "fieldName": "endTime",
-      "fieldType": "LocalDate"
+      "fieldType": "Instant"
     }
   ],
   "fluentMethods": true,

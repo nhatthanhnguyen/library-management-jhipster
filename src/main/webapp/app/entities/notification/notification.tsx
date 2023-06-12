@@ -123,9 +123,7 @@ export const Notification = () => {
                       {notification.id}
                     </Button>
                   </td>
-                  <td>
-                    {notification.sentAt ? <TextFormat type="date" value={notification.sentAt} format={APP_LOCAL_DATE_FORMAT} /> : null}
-                  </td>
+                  <td>{notification.sentAt ? <TextFormat type="date" value={notification.sentAt} format={APP_DATE_FORMAT} /> : null}</td>
                   <td>{notification.type}</td>
                   <td>{notification.user ? notification.user.login : ''}</td>
                   <td className="text-end">

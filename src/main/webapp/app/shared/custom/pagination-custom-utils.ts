@@ -17,10 +17,11 @@ export const getSortSearchState = (
 ): IPaginationSearchState => {
   const pageParam = getUrlParameter('page', location.search);
   const sortParam = getUrlParameter('sort', location.search);
-  const searchText = getUrlParameter('q', location.search);
+  const searchTextParam = getUrlParameter('q', location.search);
   let sort = sortField;
   let order = sortOrder;
   let activePage = 1;
+  let q = '';
   if (pageParam !== '' && !isNaN(parseInt(pageParam, 10))) {
     activePage = parseInt(pageParam, 10);
   }
@@ -28,6 +29,6 @@ export const getSortSearchState = (
     sort = sortParam.split(',')[0];
     order = sortParam.split(',')[1];
   }
-  console.log(searchText);
-  return { itemsPerPage, sort, order, activePage, query: searchText };
+  if (searchTextParam == null) q = query;
+  return { itemsPerPage, sort, order, activePage, query: q };
 };

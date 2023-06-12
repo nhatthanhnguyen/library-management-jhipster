@@ -2,7 +2,7 @@ package com.library.app.domain;
 
 import com.library.app.domain.enumeration.Type;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.Instant;
 import javax.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -25,7 +25,7 @@ public class Notification implements Serializable {
     private Long id;
 
     @Column(name = "sent_at")
-    private LocalDate sentAt;
+    private Instant sentAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
@@ -49,16 +49,16 @@ public class Notification implements Serializable {
         this.id = id;
     }
 
-    public LocalDate getSentAt() {
+    public Instant getSentAt() {
         return this.sentAt;
     }
 
-    public Notification sentAt(LocalDate sentAt) {
+    public Notification sentAt(Instant sentAt) {
         this.setSentAt(sentAt);
         return this;
     }
 
-    public void setSentAt(LocalDate sentAt) {
+    public void setSentAt(Instant sentAt) {
         this.sentAt = sentAt;
     }
 

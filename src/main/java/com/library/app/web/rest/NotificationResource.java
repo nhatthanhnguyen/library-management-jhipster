@@ -8,8 +8,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +52,7 @@ public class NotificationResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/notifications")
-    public ResponseEntity<Notification> createNotification(@Valid @RequestBody Notification notification) throws URISyntaxException {
+    public ResponseEntity<Notification> createNotification(@RequestBody Notification notification) throws URISyntaxException {
         log.debug("REST request to save Notification : {}", notification);
         if (notification.getId() != null) {
             throw new BadRequestAlertException("A new notification cannot already have an ID", ENTITY_NAME, "idexists");
@@ -79,7 +77,7 @@ public class NotificationResource {
     @PutMapping("/notifications/{id}")
     public ResponseEntity<Notification> updateNotification(
         @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody Notification notification
+        @RequestBody Notification notification
     ) throws URISyntaxException {
         log.debug("REST request to update Notification : {}, {}", id, notification);
         if (notification.getId() == null) {
@@ -114,7 +112,7 @@ public class NotificationResource {
     @PatchMapping(value = "/notifications/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<Notification> partialUpdateNotification(
         @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody Notification notification
+        @RequestBody Notification notification
     ) throws URISyntaxException {
         log.debug("REST request to partial update Notification partially : {}, {}", id, notification);
         if (notification.getId() == null) {
