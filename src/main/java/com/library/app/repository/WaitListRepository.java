@@ -35,6 +35,12 @@ public interface WaitListRepository extends JpaRepository<WaitList, Long> {
     )
     Page<WaitList> findAllWithToOneRelationships(Pageable pageable);
 
+    @Query("select w from WaitList w where w.user.id = :userId and w.book.id = :bookId")
+    List<WaitList> findByBookAndUser(@Param("bookId") Long bookId, @Param("userId") Long userId);
+
+    @Query("select w from WaitList w where w.book.id = :bookId")
+    List<WaitList> findByBook(@Param("bookId") Long bookId);
+
     @Query("select distinct waitList from WaitList waitList left join fetch waitList.user left join fetch waitList.book")
     List<WaitList> findAllWithToOneRelationships();
 

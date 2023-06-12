@@ -38,10 +38,10 @@ public interface BookRepository extends BookRepositoryWithBagRelationships, JpaR
     @Query(
         value = "select b from Book b where " +
         "(lower(b.title) like concat('%', lower(:query), '%') " +
-        "or (lower(b.category.name) like concat('%', lower(:query), '%')))",
+        "or (b.category is null or lower(b.category.name) like concat('%', lower(:query), '%')))",
         countQuery = "select count(b) from Book b where " +
         "(lower(b.title) like concat('%', lower(:query), '%') " +
-        "or (lower(b.category.name) like concat('%', lower(:query), '%')))"
+        "or (b.category is null or lower(b.category.name) like concat('%', lower(:query), '%')))"
     )
     Page<Book> findBooksByText(@Param("query") String query, Pageable pageable);
 

@@ -1,11 +1,15 @@
 package com.library.app.web.rest;
 
-import com.library.app.domain.Book;
-import com.library.app.repository.BookRepository;
+import com.library.app.domain.*;
+import com.library.app.domain.enumeration.Type;
+import com.library.app.repository.*;
 import com.library.app.security.AuthoritiesConstants;
+import com.library.app.security.SecurityUtils;
+import com.library.app.service.dto.ResponseMessage;
 import com.library.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,8 +48,34 @@ public class BookResource {
 
     private final BookRepository bookRepository;
 
-    public BookResource(BookRepository bookRepository) {
+    private final BookCopyRepository bookCopyRepository;
+
+    private final HoldRepository holdRepository;
+
+    private final NotificationRepository notificationRepository;
+
+    private final WaitListRepository waitListRepository;
+
+    private final CheckoutRepository checkoutRepository;
+
+    private final UserRepository userRepository;
+
+    public BookResource(
+        BookRepository bookRepository,
+        BookCopyRepository bookCopyRepository,
+        HoldRepository holdRepository,
+        NotificationRepository notificationRepository,
+        WaitListRepository waitListRepository,
+        CheckoutRepository checkoutRepository,
+        UserRepository userRepository
+    ) {
         this.bookRepository = bookRepository;
+        this.bookCopyRepository = bookCopyRepository;
+        this.holdRepository = holdRepository;
+        this.notificationRepository = notificationRepository;
+        this.waitListRepository = waitListRepository;
+        this.checkoutRepository = checkoutRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -180,6 +210,54 @@ public class BookResource {
         log.debug("REST request to get Book : {}", id);
         Optional<Book> book = bookRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(book);
+    }
+
+    @PostMapping("/books/{id}/issue")
+    public ResponseMessage issueBook(@PathVariable Long id) {
+        log.debug("REST issue a Book : {}", id);
+        User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
+        Book book = bookRepository
+            .findById(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        List<BookCopy> bookCopiesAvailable = bookCopyRepository.findBookCopiesAvailableByBookId(id);
+        if (bookCopiesAvailable.size() > 0) {
+            Checkout checkout = new Checkout();
+            checkout.setBookCopy(bookCopiesAvailable.get(0));
+            checkout.setUser(user);
+            checkout.setIsReturned(false);
+            checkout.setStartTime(Instant.now());
+            checkoutRepository.save(checkout);
+            return new ResponseMessage(200, "Issue book successfully!");
+        }
+        WaitList waitList = new WaitList();
+        waitList.setBook(book);
+        waitList.setUser(user);
+        waitListRepository.save(waitList);
+        return new ResponseMessage(200, "The book you request to issue is out of number");
+    }
+
+    @PutMapping("/books/{id}/hold")
+    public ResponseMessage holdBook(@PathVariable Long id) {
+        log.debug("REST request to return a Book : {} ", id);
+        User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
+        Book book = bookRepository
+            .findById(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        List<BookCopy> bookCopiesAvailable = bookCopyRepository.findBookCopiesAvailableByBookId(id);
+        if (bookCopiesAvailable.size() > 0) {
+            Checkout checkout = new Checkout();
+            checkout.setBookCopy(bookCopiesAvailable.get(0));
+            checkout.setUser(user);
+            checkout.setIsReturned(false);
+            checkout.setStartTime(Instant.now());
+            checkoutRepository.save(checkout);
+            return new ResponseMessage(200, "Hold book successfully!");
+        }
+        WaitList waitList = new WaitList();
+        waitList.setBook(book);
+        waitList.setUser(user);
+        waitListRepository.save(waitList);
+        return new ResponseMessage(200, "The book you request to hold is out of number");
     }
 
     /**
