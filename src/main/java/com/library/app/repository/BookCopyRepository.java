@@ -34,8 +34,8 @@ public interface BookCopyRepository extends JpaRepository<BookCopy, Long> {
 
     @Query(
         "select bc from BookCopy bc where bc.book.id = :id and " +
-        "(bc.id not in (select h.bookCopy.id from Hold h) or " +
-        "(bc.id not in (select c.bookCopy.id from Checkout c)))"
+        "(bc.id not in (select h.bookCopy.id from Hold h where h.endTime is null) or " +
+        "(bc.id not in (select c.bookCopy.id from Checkout c where c.endTime is null)))"
     )
     List<BookCopy> findBookCopiesAvailableByBookId(Long id);
 

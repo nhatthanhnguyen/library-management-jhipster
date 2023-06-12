@@ -2,9 +2,11 @@ package com.library.app.web.rest;
 
 import com.library.app.domain.Checkout;
 import com.library.app.repository.CheckoutRepository;
+import com.library.app.service.dto.ResponseMessage;
 import com.library.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -183,6 +185,18 @@ public class CheckoutResource {
         log.debug("REST request to get Checkout : {}", id);
         Optional<Checkout> checkout = checkoutRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(checkout);
+    }
+
+    @PostMapping("/checkouts/{id}/return")
+    public ResponseMessage returnBook(@PathVariable Long id) {
+        Checkout checkout = checkoutRepository
+            .findById(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        log.debug("REST request to return BookCopy : {}", checkout.getBookCopy().getId());
+        checkout.setEndTime(Instant.now());
+        checkout.setIsReturned(true);
+        checkoutRepository.save(checkout);
+        return new ResponseMessage(200, "Return book successfully");
     }
 
     /**

@@ -1,10 +1,15 @@
 package com.library.app.web.rest;
 
-import com.library.app.domain.Hold;
-import com.library.app.repository.HoldRepository;
+import com.library.app.domain.*;
+import com.library.app.domain.enumeration.Type;
+import com.library.app.repository.*;
+import com.library.app.security.SecurityUtils;
+import com.library.app.service.MailService;
+import com.library.app.service.dto.ResponseMessage;
 import com.library.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,8 +45,30 @@ public class HoldResource {
 
     private final HoldRepository holdRepository;
 
-    public HoldResource(HoldRepository holdRepository) {
+    private final WaitListRepository waitListRepository;
+
+    private final UserRepository userRepository;
+
+    private final NotificationRepository notificationRepository;
+
+    private final CheckoutRepository checkoutRepository;
+
+    private final MailService mailService;
+
+    public HoldResource(
+        HoldRepository holdRepository,
+        WaitListRepository waitListRepository,
+        UserRepository userRepository,
+        NotificationRepository notificationRepository,
+        CheckoutRepository checkoutRepository,
+        MailService mailService
+    ) {
         this.holdRepository = holdRepository;
+        this.waitListRepository = waitListRepository;
+        this.userRepository = userRepository;
+        this.notificationRepository = notificationRepository;
+        this.checkoutRepository = checkoutRepository;
+        this.mailService = mailService;
     }
 
     /**
@@ -178,6 +205,24 @@ public class HoldResource {
         return ResponseUtil.wrapOrNotFound(hold);
     }
 
+    @PostMapping("/holds/{id}/issue")
+    public ResponseMessage issueBook(@PathVariable Long id) {
+        log.debug("");
+        Hold hold = holdRepository
+            .findById(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        Instant instant = Instant.now();
+        hold.setEndTime(instant);
+        holdRepository.save(hold);
+        Checkout checkout = new Checkout();
+        checkout.setUser(hold.getUser());
+        checkout.setBookCopy(hold.getBookCopy());
+        checkout.setStartTime(instant);
+        checkout.setIsReturned(false);
+        checkoutRepository.save(checkout);
+        return new ResponseMessage(200, "Issue book successfully");
+    }
+
     /**
      * {@code DELETE  /holds/:id} : delete the "id" hold.
      *
@@ -187,7 +232,23 @@ public class HoldResource {
     @DeleteMapping("/holds/{id}")
     public ResponseEntity<Void> deleteHold(@PathVariable Long id) {
         log.debug("REST request to delete Hold : {}", id);
+        Hold hold = holdRepository
+            .findById(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
         holdRepository.deleteById(id);
+        Book book = hold.getBookCopy().getBook();
+        List<WaitList> waitLists = waitListRepository.findByBook(book.getId());
+        for (WaitList wait : waitLists) {
+            waitListRepository.deleteById(wait.getId());
+            Notification notification = new Notification();
+            notification.setUser(wait.getUser());
+            notification.setType(Type.AVAILABLE);
+            notification.setSentAt(Instant.now());
+            notificationRepository.save(notification);
+
+            log.debug("REST send email book available {} to user {}", wait.getBook().getTitle(), wait.getUser().getLogin());
+            mailService.sendBookAvailable(wait.getUser(), wait.getBook());
+        }
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
