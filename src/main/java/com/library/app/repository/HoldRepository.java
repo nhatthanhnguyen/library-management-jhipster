@@ -35,6 +35,12 @@ public interface HoldRepository extends JpaRepository<Hold, Long> {
     )
     Page<Hold> findAllWithToOneRelationships(Pageable pageable);
 
+    @Query(
+        value = "select distinct h from Hold h where h.user.id = :userId",
+        countQuery = "select count(distinct h) from Hold h where h.user.id = :userId"
+    )
+    Page<Hold> findAllByUser(@Param("userId") Long userId, Pageable pageable);
+
     @Query("select distinct hold from Hold hold left join fetch hold.user")
     List<Hold> findAllWithToOneRelationships();
 

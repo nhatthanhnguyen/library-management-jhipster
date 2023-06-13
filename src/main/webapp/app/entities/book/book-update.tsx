@@ -29,6 +29,7 @@ export const BookUpdate = () => {
   const loading = useAppSelector(state => state.book.loading);
   const updating = useAppSelector(state => state.book.updating);
   const updateSuccess = useAppSelector(state => state.book.updateSuccess);
+  console.log(location.search);
 
   const handleClose = () => {
     navigate('/book' + location.search);

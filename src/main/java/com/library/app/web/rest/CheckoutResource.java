@@ -1,7 +1,12 @@
 package com.library.app.web.rest;
 
+import com.library.app.domain.Authority;
 import com.library.app.domain.Checkout;
+import com.library.app.domain.User;
+import com.library.app.repository.AuthorityRepository;
 import com.library.app.repository.CheckoutRepository;
+import com.library.app.repository.UserRepository;
+import com.library.app.security.SecurityUtils;
 import com.library.app.service.dto.ResponseMessage;
 import com.library.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -16,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +46,14 @@ public class CheckoutResource {
 
     private final CheckoutRepository checkoutRepository;
 
-    public CheckoutResource(CheckoutRepository checkoutRepository) {
+    private final UserRepository userRepository;
+
+    private final AuthorityRepository authorityRepository;
+
+    public CheckoutResource(CheckoutRepository checkoutRepository, UserRepository userRepository, AuthorityRepository authorityRepository) {
         this.checkoutRepository = checkoutRepository;
+        this.userRepository = userRepository;
+        this.authorityRepository = authorityRepository;
     }
 
     /**
@@ -69,7 +79,7 @@ public class CheckoutResource {
     /**
      * {@code PUT  /checkouts/:id} : Updates an existing checkout.
      *
-     * @param id the id of the checkout to save.
+     * @param id       the id of the checkout to save.
      * @param checkout the checkout to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated checkout,
      * or with status {@code 400 (Bad Request)} if the checkout is not valid,
@@ -103,7 +113,7 @@ public class CheckoutResource {
     /**
      * {@code PATCH  /checkouts/:id} : Partial updates given fields of an existing checkout, field will ignore if it is null
      *
-     * @param id the id of the checkout to save.
+     * @param id       the id of the checkout to save.
      * @param checkout the checkout to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated checkout,
      * or with status {@code 400 (Bad Request)} if the checkout is not valid,
@@ -154,7 +164,7 @@ public class CheckoutResource {
     /**
      * {@code GET  /checkouts} : get all the checkouts.
      *
-     * @param pageable the pagination information.
+     * @param pageable  the pagination information.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of checkouts in body.
      */
@@ -164,11 +174,13 @@ public class CheckoutResource {
         @RequestParam(required = false, defaultValue = "false") boolean eagerload
     ) {
         log.debug("REST request to get a page of Checkouts");
+        User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
+        Authority authority = authorityRepository.findById("ROLE_ADMIN").get();
         Page<Checkout> page;
-        if (eagerload) {
+        if (user.getAuthorities().contains(authority)) {
             page = checkoutRepository.findAllWithEagerRelationships(pageable);
         } else {
-            page = checkoutRepository.findAll(pageable);
+            page = checkoutRepository.findAllByUser(user.getId(), pageable);
         }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

@@ -245,12 +245,11 @@ public class BookResource {
             .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
         List<BookCopy> bookCopiesAvailable = bookCopyRepository.findBookCopiesAvailableByBookId(id);
         if (bookCopiesAvailable.size() > 0) {
-            Checkout checkout = new Checkout();
-            checkout.setBookCopy(bookCopiesAvailable.get(0));
-            checkout.setUser(user);
-            checkout.setIsReturned(false);
-            checkout.setStartTime(Instant.now());
-            checkoutRepository.save(checkout);
+            Hold hold = new Hold();
+            hold.setUser(user);
+            hold.setBookCopy(bookCopiesAvailable.get(0));
+            hold.setStartTime(Instant.now());
+            holdRepository.save(hold);
             return new ResponseMessage(200, "Hold book successfully!");
         }
         WaitList waitList = new WaitList();

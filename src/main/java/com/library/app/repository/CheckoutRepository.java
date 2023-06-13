@@ -35,6 +35,12 @@ public interface CheckoutRepository extends JpaRepository<Checkout, Long> {
     )
     Page<Checkout> findAllWithToOneRelationships(Pageable pageable);
 
+    @Query(
+        value = "select distinct c from Checkout c where c.user.id = :userId",
+        countQuery = "select count(distinct c) from Checkout c where c.user.id = :userId"
+    )
+    Page<Checkout> findAllByUser(@Param("userId") Long userId, Pageable pageable);
+
     @Query("select distinct checkout from Checkout checkout left join fetch checkout.user")
     List<Checkout> findAllWithToOneRelationships();
 

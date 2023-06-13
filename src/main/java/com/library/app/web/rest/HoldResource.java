@@ -53,6 +53,8 @@ public class HoldResource {
 
     private final CheckoutRepository checkoutRepository;
 
+    private final AuthorityRepository authorityRepository;
+
     private final MailService mailService;
 
     public HoldResource(
@@ -61,6 +63,7 @@ public class HoldResource {
         UserRepository userRepository,
         NotificationRepository notificationRepository,
         CheckoutRepository checkoutRepository,
+        AuthorityRepository authorityRepository,
         MailService mailService
     ) {
         this.holdRepository = holdRepository;
@@ -68,6 +71,7 @@ public class HoldResource {
         this.userRepository = userRepository;
         this.notificationRepository = notificationRepository;
         this.checkoutRepository = checkoutRepository;
+        this.authorityRepository = authorityRepository;
         this.mailService = mailService;
     }
 
@@ -182,11 +186,13 @@ public class HoldResource {
         @RequestParam(required = false, defaultValue = "false") boolean eagerload
     ) {
         log.debug("REST request to get a page of Holds");
+        User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
+        Authority authority = authorityRepository.findById("ROLE_ADMIN").get();
         Page<Hold> page;
-        if (eagerload) {
+        if (user.getAuthorities().contains(authority)) {
             page = holdRepository.findAllWithEagerRelationships(pageable);
         } else {
-            page = holdRepository.findAll(pageable);
+            page = holdRepository.findAllByUser(user.getId(), pageable);
         }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
