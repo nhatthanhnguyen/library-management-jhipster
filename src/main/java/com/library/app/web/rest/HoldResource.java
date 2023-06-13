@@ -245,18 +245,20 @@ public class HoldResource {
             .findById(id)
             .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
         holdRepository.deleteById(id);
-        Book book = hold.getBookCopy().getBook();
-        List<WaitList> waitLists = waitListRepository.findByBook(book.getId());
-        for (WaitList wait : waitLists) {
-            waitListRepository.deleteById(wait.getId());
-            Notification notification = new Notification();
-            notification.setUser(wait.getUser());
-            notification.setType(Type.AVAILABLE);
-            notification.setSentAt(Instant.now());
-            notificationRepository.save(notification);
+        if (hold.getEndTime() == null) {
+            Book book = hold.getBookCopy().getBook();
+            List<WaitList> waitLists = waitListRepository.findByBook(book.getId());
+            for (WaitList wait : waitLists) {
+                waitListRepository.deleteById(wait.getId());
+                Notification notification = new Notification();
+                notification.setUser(wait.getUser());
+                notification.setType(Type.AVAILABLE);
+                notification.setSentAt(Instant.now());
+                notificationRepository.save(notification);
 
-            log.debug("REST send email book available {} to user {}", wait.getBook().getTitle(), wait.getUser().getLogin());
-            mailService.sendBookAvailable(wait.getUser(), wait.getBook());
+                log.debug("REST send email book available {} to user {}", wait.getBook().getTitle(), wait.getUser().getLogin());
+                mailService.sendBookAvailable(wait.getUser(), wait.getBook());
+            }
         }
         return ResponseEntity
             .noContent()

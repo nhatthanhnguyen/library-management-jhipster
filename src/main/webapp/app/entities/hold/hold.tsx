@@ -90,12 +90,12 @@ export const Hold = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          {isAdmin ? (
-            <Link to="/hold/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-              <FontAwesomeIcon icon="plus" />
-              &nbsp; Create a new Hold
-            </Link>
-          ) : undefined}
+          {/*{isAdmin ? (*/}
+          {/*  <Link to="/hold/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">*/}
+          {/*    <FontAwesomeIcon icon="plus" />*/}
+          {/*    &nbsp; Create a new Hold*/}
+          {/*  </Link>*/}
+          {/*) : undefined}*/}
         </div>
       </h2>
       <div className="table-responsive">
@@ -139,18 +139,20 @@ export const Hold = () => {
                     <div className="btn-group flex-btn-group-container">
                       {isAdmin ? (
                         <>
-                          <Button tag={Link} to={`/hold/${hold.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                            <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
-                          </Button>
-                          <Button
-                            tag={Link}
-                            to={`/hold/${hold.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                            color="primary"
-                            size="sm"
-                            data-cy="entityEditButton"
-                          >
-                            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                          </Button>
+                          {/*<Button tag={Link} to={`/hold/${hold.id}`} color="info" size="sm" data-cy="entityDetailsButton">*/}
+                          {/*  <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>*/}
+                          {/*</Button>*/}
+                          {hold.endTime == null ? (
+                            <Button
+                              tag={Link}
+                              to={`/hold/${hold.id}/issue?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                              color="primary"
+                              size="sm"
+                              data-cy="entityEditButton"
+                            >
+                              <FontAwesomeIcon icon="plus" /> <span className="d-none d-md-inline">Issue</span>
+                            </Button>
+                          ) : undefined}
                         </>
                       ) : undefined}
                       <Button

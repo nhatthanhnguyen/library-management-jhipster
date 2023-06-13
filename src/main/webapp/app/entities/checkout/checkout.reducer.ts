@@ -74,6 +74,13 @@ export const deleteEntity = createAsyncThunk(
   { serializeError: serializeAxiosError }
 );
 
+export const returnBook = createAsyncThunk('checkout/return', async (id: string | number, thunkAPI) => {
+  const requestUrl = `${apiUrl}/${id}/return`;
+  const result = await axios.post(requestUrl);
+  thunkAPI.dispatch(getEntities({}));
+  return result;
+});
+
 // slice
 
 export const CheckoutSlice = createEntitySlice({

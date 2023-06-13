@@ -89,12 +89,12 @@ export const Checkout = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          {isAdmin ? (
-            <Link to="/checkout/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-              <FontAwesomeIcon icon="plus" />
-              &nbsp; Create a new Checkout
-            </Link>
-          ) : undefined}
+          {/*{isAdmin ? (*/}
+          {/*  <Link to="/checkout/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">*/}
+          {/*    <FontAwesomeIcon icon="plus" />*/}
+          {/*    &nbsp; Create a new Checkout*/}
+          {/*  </Link>*/}
+          {/*) : undefined}*/}
         </div>
       </h2>
       <div className="table-responsive">
@@ -141,27 +141,29 @@ export const Checkout = () => {
                   {isAdmin ? (
                     <td className="text-end">
                       <div className="btn-group flex-btn-group-container">
-                        <Button tag={Link} to={`/checkout/${checkout.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                          <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
-                        </Button>
-                        <Button
-                          tag={Link}
-                          to={`/checkout/${checkout.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                          color="primary"
-                          size="sm"
-                          data-cy="entityEditButton"
-                        >
-                          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                        </Button>
-                        <Button
-                          tag={Link}
-                          to={`/checkout/${checkout.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                          color="danger"
-                          size="sm"
-                          data-cy="entityDeleteButton"
-                        >
-                          <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                        </Button>
+                        {/*<Button tag={Link} to={`/checkout/${checkout.id}`} color="info" size="sm" data-cy="entityDetailsButton">*/}
+                        {/*  <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>*/}
+                        {/*</Button>*/}
+                        {checkout.endTime == null ? (
+                          <Button
+                            tag={Link}
+                            to={`/checkout/${checkout.id}/return?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                            color="primary"
+                            size="sm"
+                            data-cy="entityEditButton"
+                          >
+                            <FontAwesomeIcon icon="house-return" /> <span className="d-none d-md-inline">Return</span>
+                          </Button>
+                        ) : undefined}
+                        {/*<Button*/}
+                        {/*  tag={Link}*/}
+                        {/*  to={`/checkout/${checkout.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}*/}
+                        {/*  color="danger"*/}
+                        {/*  size="sm"*/}
+                        {/*  data-cy="entityDeleteButton"*/}
+                        {/*>*/}
+                        {/*  <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>*/}
+                        {/*</Button>*/}
                       </div>
                     </td>
                   ) : undefined}

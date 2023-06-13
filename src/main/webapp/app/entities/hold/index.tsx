@@ -7,6 +7,7 @@ import Hold from './hold';
 import HoldDetail from './hold-detail';
 import HoldUpdate from './hold-update';
 import HoldDeleteDialog from './hold-delete-dialog';
+import HoldIssueDialog from 'app/entities/hold/hold-issue-dialog';
 
 const HoldRoutes = () => (
   <ErrorBoundaryRoutes>
@@ -16,6 +17,7 @@ const HoldRoutes = () => (
       <Route index element={<HoldDetail />} />
       <Route path="edit" element={<HoldUpdate />} />
       <Route path="delete" element={<HoldDeleteDialog />} />
+      <Route path="issue" element={<HoldIssueDialog />} />
     </Route>
   </ErrorBoundaryRoutes>
 );

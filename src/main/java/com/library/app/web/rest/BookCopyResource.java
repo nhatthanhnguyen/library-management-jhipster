@@ -1,10 +1,18 @@
 package com.library.app.web.rest;
 
+import com.library.app.domain.Book;
 import com.library.app.domain.BookCopy;
+import com.library.app.domain.Notification;
+import com.library.app.domain.WaitList;
+import com.library.app.domain.enumeration.Type;
 import com.library.app.repository.BookCopyRepository;
+import com.library.app.repository.NotificationRepository;
+import com.library.app.repository.WaitListRepository;
+import com.library.app.service.MailService;
 import com.library.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,8 +50,22 @@ public class BookCopyResource {
 
     private final BookCopyRepository bookCopyRepository;
 
-    public BookCopyResource(BookCopyRepository bookCopyRepository) {
+    private final NotificationRepository notificationRepository;
+
+    private final WaitListRepository waitListRepository;
+
+    private final MailService mailService;
+
+    public BookCopyResource(
+        BookCopyRepository bookCopyRepository,
+        NotificationRepository notificationRepository,
+        WaitListRepository waitListRepository,
+        MailService mailService
+    ) {
         this.bookCopyRepository = bookCopyRepository;
+        this.notificationRepository = notificationRepository;
+        this.waitListRepository = waitListRepository;
+        this.mailService = mailService;
     }
 
     /**
@@ -60,6 +82,19 @@ public class BookCopyResource {
             throw new BadRequestAlertException("A new bookCopy cannot already have an ID", ENTITY_NAME, "idexists");
         }
         BookCopy result = bookCopyRepository.save(bookCopy);
+        Book book = result.getBook();
+        List<WaitList> waitLists = waitListRepository.findByBook(book.getId());
+        for (WaitList wait : waitLists) {
+            waitListRepository.deleteById(wait.getId());
+            Notification notification = new Notification();
+            notification.setUser(wait.getUser());
+            notification.setType(Type.AVAILABLE);
+            notification.setSentAt(Instant.now());
+            notificationRepository.save(notification);
+
+            log.debug("REST send email book available {} to user {}", wait.getBook().getTitle(), wait.getUser().getLogin());
+            mailService.sendBookAvailable(wait.getUser(), wait.getBook());
+        }
         return ResponseEntity
             .created(new URI("/api/book-copies/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))

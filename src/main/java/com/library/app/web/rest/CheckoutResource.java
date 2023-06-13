@@ -1,12 +1,10 @@
 package com.library.app.web.rest;
 
-import com.library.app.domain.Authority;
-import com.library.app.domain.Checkout;
-import com.library.app.domain.User;
-import com.library.app.repository.AuthorityRepository;
-import com.library.app.repository.CheckoutRepository;
-import com.library.app.repository.UserRepository;
+import com.library.app.domain.*;
+import com.library.app.domain.enumeration.Type;
+import com.library.app.repository.*;
 import com.library.app.security.SecurityUtils;
+import com.library.app.service.MailService;
 import com.library.app.service.dto.ResponseMessage;
 import com.library.app.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -50,10 +48,26 @@ public class CheckoutResource {
 
     private final AuthorityRepository authorityRepository;
 
-    public CheckoutResource(CheckoutRepository checkoutRepository, UserRepository userRepository, AuthorityRepository authorityRepository) {
+    private final WaitListRepository waitListRepository;
+
+    private final NotificationRepository notificationRepository;
+
+    private final MailService mailService;
+
+    public CheckoutResource(
+        CheckoutRepository checkoutRepository,
+        UserRepository userRepository,
+        AuthorityRepository authorityRepository,
+        WaitListRepository waitListRepository,
+        NotificationRepository notificationRepository,
+        MailService mailService
+    ) {
         this.checkoutRepository = checkoutRepository;
         this.userRepository = userRepository;
         this.authorityRepository = authorityRepository;
+        this.waitListRepository = waitListRepository;
+        this.notificationRepository = notificationRepository;
+        this.mailService = mailService;
     }
 
     /**
@@ -208,6 +222,19 @@ public class CheckoutResource {
         checkout.setEndTime(Instant.now());
         checkout.setIsReturned(true);
         checkoutRepository.save(checkout);
+        Book book = checkout.getBookCopy().getBook();
+        List<WaitList> waitLists = waitListRepository.findByBook(book.getId());
+        for (WaitList wait : waitLists) {
+            waitListRepository.deleteById(wait.getId());
+            Notification notification = new Notification();
+            notification.setUser(wait.getUser());
+            notification.setType(Type.AVAILABLE);
+            notification.setSentAt(Instant.now());
+            notificationRepository.save(notification);
+
+            log.debug("REST send email book available {} to user {}", wait.getBook().getTitle(), wait.getUser().getLogin());
+            mailService.sendBookAvailable(wait.getUser(), wait.getBook());
+        }
         return new ResponseMessage(200, "Return book successfully");
     }
 
