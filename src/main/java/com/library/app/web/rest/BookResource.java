@@ -213,8 +213,8 @@ public class BookResource {
     }
 
     @PostMapping("/books/{id}/issue")
-    public ResponseMessage issueBook(@PathVariable Long id) {
-        log.debug("REST issue a Book : {}", id);
+    public ResponseEntity<Void> issueBook(@PathVariable Long id) {
+        log.debug("REST request to issue a Book : {}", id);
         User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
         Book book = bookRepository
             .findById(id)
@@ -227,18 +227,24 @@ public class BookResource {
             checkout.setIsReturned(false);
             checkout.setStartTime(Instant.now());
             checkoutRepository.save(checkout);
-            return new ResponseMessage(200, "Issue book successfully!");
+            return ResponseEntity
+                .noContent()
+                .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, "checkout", String.valueOf(id)))
+                .build();
         }
         WaitList waitList = new WaitList();
         waitList.setBook(book);
         waitList.setUser(user);
         waitListRepository.save(waitList);
-        return new ResponseMessage(200, "The book you request to issue is out of number");
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, "wait", String.valueOf(id)))
+            .build();
     }
 
-    @PutMapping("/books/{id}/hold")
-    public ResponseMessage holdBook(@PathVariable Long id) {
-        log.debug("REST request to return a Book : {} ", id);
+    @PostMapping("/books/{id}/hold")
+    public ResponseEntity<Void> holdBook(@PathVariable Long id) {
+        log.debug("REST request to hold a Book : {} ", id);
         User user = userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
         Book book = bookRepository
             .findById(id)
@@ -250,13 +256,19 @@ public class BookResource {
             hold.setBookCopy(bookCopiesAvailable.get(0));
             hold.setStartTime(Instant.now());
             holdRepository.save(hold);
-            return new ResponseMessage(200, "Hold book successfully!");
+            return ResponseEntity
+                .noContent()
+                .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, "hold", String.valueOf(id)))
+                .build();
         }
         WaitList waitList = new WaitList();
         waitList.setBook(book);
         waitList.setUser(user);
         waitListRepository.save(waitList);
-        return new ResponseMessage(200, "The book you request to hold is out of number");
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, "wait", String.valueOf(id)))
+            .build();
     }
 
     /**

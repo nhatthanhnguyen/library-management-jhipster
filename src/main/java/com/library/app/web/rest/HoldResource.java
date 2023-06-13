@@ -212,8 +212,8 @@ public class HoldResource {
     }
 
     @PostMapping("/holds/{id}/issue")
-    public ResponseMessage issueBook(@PathVariable Long id) {
-        log.debug("");
+    public ResponseEntity<Void> issueBook(@PathVariable Long id) {
+        log.debug("REST request to issue the Book : {}", id);
         Hold hold = holdRepository
             .findById(id)
             .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
@@ -226,7 +226,10 @@ public class HoldResource {
         checkout.setStartTime(instant);
         checkout.setIsReturned(false);
         checkoutRepository.save(checkout);
-        return new ResponseMessage(200, "Issue book successfully");
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, "checkout", String.valueOf(id)))
+            .build();
     }
 
     /**

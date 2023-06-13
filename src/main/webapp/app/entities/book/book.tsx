@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, FormGroup, Input, InputGroup, Table } from 'reactstrap';
 import { getSortState, JhiItemCount, JhiPagination } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { toast } from 'react-toastify';
 
 import { AUTHORITIES } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
@@ -152,7 +153,7 @@ export const Book = () => {
                         <>
                           <Button
                             tag={Link}
-                            to={`/book/${book.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                            to={`/book/${book.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}&q=${paginationState.query}`}
                             color="primary"
                             size="sm"
                             data-cy="entityEditButton"
@@ -161,7 +162,7 @@ export const Book = () => {
                           </Button>
                           <Button
                             tag={Link}
-                            to={`/book/${book.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                            to={`/book/${book.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}&q=${paginationState.query}`}
                             color="danger"
                             size="sm"
                             data-cy="entityDeleteButton"
@@ -171,11 +172,23 @@ export const Book = () => {
                         </>
                       ) : (
                         <>
-                          <Button color="primary" size="sm">
+                          <Button
+                            tag={Link}
+                            to={`/book/${book.id}/issue?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}&q=${paginationState.query}`}
+                            color="primary"
+                            size="sm"
+                            data-cy="entityIssueButton"
+                          >
                             <FontAwesomeIcon icon="plus" />
-                            &nbsp; Borrow
+                            &nbsp; Issue
                           </Button>
-                          <Button color="success" size="sm">
+                          <Button
+                            tag={Link}
+                            to={`/book/${book.id}/hold?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}&q=${paginationState.query}`}
+                            color="success"
+                            size="sm"
+                            data-cy="entityHoldButton"
+                          >
                             <FontAwesomeIcon icon="list" />
                             &nbsp; Hold
                           </Button>

@@ -120,7 +120,7 @@ export const Hold = () => {
                 <th>
                   Book Copy <FontAwesomeIcon icon="sort" />
                 </th>
-                {isAdmin ? <th /> : undefined}
+                <th />
               </tr>
             </thead>
             <tbody>
@@ -135,33 +135,35 @@ export const Hold = () => {
                   <td>{hold.endTime ? <TextFormat type="date" value={hold.endTime} format={APP_DATE_FORMAT} /> : null}</td>
                   {isAdmin ? <td>{hold.user ? hold.user.login : ''}</td> : undefined}
                   <td>{hold.bookCopy ? <Link to={`/book-copy/${hold.bookCopy.id}`}>{hold.bookCopy.id}</Link> : ''}</td>
-                  {isAdmin ? (
-                    <td className="text-end">
-                      <div className="btn-group flex-btn-group-container">
-                        <Button tag={Link} to={`/hold/${hold.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                          <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
-                        </Button>
-                        <Button
-                          tag={Link}
-                          to={`/hold/${hold.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                          color="primary"
-                          size="sm"
-                          data-cy="entityEditButton"
-                        >
-                          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                        </Button>
-                        <Button
-                          tag={Link}
-                          to={`/hold/${hold.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                          color="danger"
-                          size="sm"
-                          data-cy="entityDeleteButton"
-                        >
-                          <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                        </Button>
-                      </div>
-                    </td>
-                  ) : undefined}
+                  <td className="text-end">
+                    <div className="btn-group flex-btn-group-container">
+                      {isAdmin ? (
+                        <>
+                          <Button tag={Link} to={`/hold/${hold.id}`} color="info" size="sm" data-cy="entityDetailsButton">
+                            <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                          </Button>
+                          <Button
+                            tag={Link}
+                            to={`/hold/${hold.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                            color="primary"
+                            size="sm"
+                            data-cy="entityEditButton"
+                          >
+                            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                          </Button>
+                        </>
+                      ) : undefined}
+                      <Button
+                        tag={Link}
+                        to={`/hold/${hold.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                        color="danger"
+                        size="sm"
+                        data-cy="entityDeleteButton"
+                      >
+                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                      </Button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

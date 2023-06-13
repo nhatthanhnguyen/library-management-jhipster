@@ -74,6 +74,28 @@ export const deleteEntity = createAsyncThunk(
   { serializeError: serializeAxiosError }
 );
 
+export const issueBook = createAsyncThunk(
+  'book/issue',
+  async (id: string | number, thunkAPI) => {
+    const requestUrl = `${apiUrl}/${id}/issue`;
+    const result = await axios.post(requestUrl);
+    thunkAPI.dispatch(getEntities({}));
+    return result;
+  },
+  { serializeError: serializeAxiosError }
+);
+
+export const holdBook = createAsyncThunk(
+  'book/hold',
+  async (id: string | number, thunkAPI) => {
+    const requestUrl = `${apiUrl}/${id}/hold`;
+    const result = await axios.post(requestUrl);
+    thunkAPI.dispatch(getEntities({}));
+    return result;
+  },
+  { serializeError: serializeAxiosError }
+);
+
 // slice
 
 export const BookSlice = createEntitySlice({
