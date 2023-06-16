@@ -7,6 +7,7 @@ import Checkout from './checkout';
 import CheckoutDetail from './checkout-detail';
 import CheckoutUpdate from './checkout-update';
 import CheckoutDeleteDialog from './checkout-delete-dialog';
+import CheckoutReturnDialog from 'app/entities/checkout/checkout-return-dialog';
 
 const CheckoutRoutes = () => (
   <ErrorBoundaryRoutes>
@@ -16,6 +17,7 @@ const CheckoutRoutes = () => (
       <Route index element={<CheckoutDetail />} />
       <Route path="edit" element={<CheckoutUpdate />} />
       <Route path="delete" element={<CheckoutDeleteDialog />} />
+      <Route path="return" element={<CheckoutReturnDialog />} />
     </Route>
   </ErrorBoundaryRoutes>
 );

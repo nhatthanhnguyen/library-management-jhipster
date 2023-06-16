@@ -41,6 +41,9 @@ public interface CheckoutRepository extends JpaRepository<Checkout, Long> {
     )
     Page<Checkout> findAllByUser(@Param("userId") Long userId, Pageable pageable);
 
+    @Query(value = "select c from Checkout c where c.endTime is null")
+    List<Checkout> findCheckoutsThatNotReturned();
+
     @Query("select distinct checkout from Checkout checkout left join fetch checkout.user")
     List<Checkout> findAllWithToOneRelationships();
 

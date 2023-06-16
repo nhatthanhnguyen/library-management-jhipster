@@ -44,7 +44,7 @@ export const CheckoutReturnDialog = () => {
         Confirm return
       </ModalHeader>
       <ModalBody id="libraryManagementApp.checkout.delete.question">
-        Are you sure you want to return the book {checkoutEntity.bookCopy.id}?
+        Are you sure you want to return the book {checkoutEntity.bookCopy ? checkoutEntity.bookCopy.id : ''}?
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={handleClose}>
